@@ -1,8 +1,8 @@
 {
   "name": "♿",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "manifest_version": 2,
-  "description": "https://github.com/hrt/wheelchair",
+  "description": "https://github.com/katistix/wheelchair",
   "content_scripts": [
   	{"matches":["*://krunker.io/*"],"run_at": "document_start","js": ["chairloader.js"],"all_frames":true,"match_about_blank":true}]
 }
