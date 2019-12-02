@@ -149,6 +149,9 @@ function cripple_window(_window) {
             const bhop = true;
             const boxEsp = true;
             const chams = true;
+            const healthEsp = true;
+            const nameEsp = true;
+            const weaponEsp = true;
 
             const playerHeight = 11;
             const crouchDst = 3;
@@ -334,11 +337,13 @@ function cripple_window(_window) {
                         }
 
                         // health bar
-                        c.fillStyle = "rgba(255,50,50,1)";
-                        let barMaxHeight = ymax - ymin;
-                        c.fillRect(xmin - 7, ymin, -10, barMaxHeight);
-                        c.fillStyle = "#00FFFF";
-                        c.fillRect(xmin - 7, ymin, -10, barMaxHeight * (e.health / e.maxHealth));
+                        if (healthEsp) {
+                          c.fillStyle = "rgba(255,50,50,1)";
+                          let barMaxHeight = ymax - ymin;
+                          c.fillRect(xmin - 7, ymin, -10, barMaxHeight);
+                          c.fillStyle = "#00FFFF";
+                          c.fillRect(xmin - 7, ymin, -10, barMaxHeight * (e.health / e.maxHealth));
+                        }
 
                         // info
                         c.font = "60px Sans-serif";
@@ -347,15 +352,21 @@ function cripple_window(_window) {
                         c.lineWidth = 1;
                         let x = xmax + 7;
                         let y = ymax;
-                        c.fillText(e.name, x, y);
-                        c.strokeText(e.name, x, y);
+                        if (nameEsp) {
+                          c.fillText(e.name, x, y);
+                          c.strokeText(e.name, x, y);
+                        }
                         c.font = "30px Sans-serif";
                         y += 35;
-                        c.fillText(e.weapon.name, x, y);
-                        c.strokeText(e.weapon.name, x, y);
+                        if (weaponEsp) {
+                          c.fillText(e.weapon.name, x, y);
+                          c.strokeText(e.weapon.name, x, y);
+                        }
                         y += 35;
-                        c.fillText(e.health + ' HP', x, y);
-                        c.strokeText(e.health + ' HP', x, y);
+                        if (healthEsp) {
+                          c.fillText(e.health + ' HP', x, y);
+                          c.strokeText(e.health + ' HP', x, y);
+                        }
 
                         c.strokeStyle = original_strokeStyle;
                         c.lineWidth = original_lineWidth;
