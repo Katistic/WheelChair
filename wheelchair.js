@@ -245,7 +245,7 @@ function cripple_window(_window) {
             controls.keys[controls.reloadKey] = !haveAmmo() * 1;
 
             // bhop
-            inputs[JUMP] = (controls.keys[controls.jumpKey] && !me.didJump) * 1;
+            if (_window['bhop']) inputs[JUMP] = (controls.keys[controls.jumpKey] && !me.didJump) * 1;
 
             // runs once
             if (!shared_state.get('init')) {
