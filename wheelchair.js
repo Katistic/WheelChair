@@ -3,9 +3,11 @@
 // @namespace    https://github.com/hrt
 // @version      1.9.0
 // @description  WheelChair
-// @author       hrt x ttap
+// @author       hrt x ttap x katistic
 // @match        https://krunker.io/*
 // @run-at       document-start
+// @require      https://ajax.googleapis.com/ajax/libs/webfont/1/webfont.js
+// @require      https://krunkr.com/assets/js/canvas.gui.js?ver=0.6
 // @grant        none
 // ==/UserScript==
 
@@ -42,7 +44,6 @@ function cripple_window(_window) {
         });
     };
 
-
     // https://github.com/MasterP-kr/WheelChair/blob/master/user.script.js#L174
     let global_invisible_define = function (key, value) {
         invisible_define(window, key, value);
@@ -59,7 +60,14 @@ function cripple_window(_window) {
 
     keyMap['options'] = genKey();
     global_invisible_define(keyMap['options'], options);
-    window.top.console.log(window[keyMap['options']])
+
+    try {
+        if (window.top.document.getElementById('instructions').innerHTML != "Hack by hrt + ttap. Menu by Katistic.") {
+            window.top.document.getElementById('instructions').innerHTML = "Hack by hrt + ttap. Menu by Katistic."
+        }
+    } catch {
+        //pass
+    }
 
     // unique to each user
     const master_key = 'ttap#4547';
@@ -239,9 +247,7 @@ function cripple_window(_window) {
             }
             // aimbot
             let ty = controls.object.rotation.y, tx = controls[pchObjc].rotation.x;
-            if (!window[keyMap['options']].aimbot) {
-                //pass
-            } else if (closest) {
+            if (closest && window[keyMap['toggles']].aimbot.checked) {
                 let target = closest;
                 let y = target.y3 + playerHeight - (headScale/* + hitBoxPad*/) / 2 - target.crouchVal * crouchDst;
                 if (me.weapon.nAuto && me.didShoot) {
@@ -271,11 +277,31 @@ function cripple_window(_window) {
             if (window[keyMap['options']].autoReload) {controls.keys[controls.reloadKey] = !haveAmmo() * 1};
 
             // bhop
-            if (window[keyMap['options']].bhop) {inputs[JUMP] = (controls.keys[controls.jumpKey] && !me.didJump) * 1};
+            if (window[keyMap['options']].bhop) {
+              if ('toggles' in keyMap) {
+                  if (window[keyMap['toggles']].bhop.checked) {inputs[JUMP] = (controls.keys[controls.jumpKey] && !me.didJump) * 1}
+              } else {
+                  inputs[JUMP] = (controls.keys[controls.jumpKey] && !me.didJump) * 1
+              }
+            };
 
             // runs once
             if (!shared_state.get('init')) {
                 shared_state.set('init', true);
+
+                const e = _window.top.document.getElementById('signedOutHeaderBar');
+                const n = _window.top.document.createElement('form');
+                n.innerHTML = "<input type=\"checkbox\" name=\"aimbot\" value=\"true\" id=\"aimbot\"><label for=\"aimbot\"> AIMBOT</label>\
+                <input type=\"checkbox\" name=\"bhop\" value=\"true\" id=\"bhop\"><label for=\"bhop\"> BHOP </label>";
+
+                _window.top.document.getElementById('menuHider').replaceChild(n, e);
+
+                keyMap['toggles'] = genKey();
+                const toggles = {
+                    aimbot: _window.top.document.getElementById('aimbot'),
+                    bhop: _window.top.document.getElementById('bhop'),
+                };
+                global_invisible_define(keyMap['toggles'], toggles);
 
                 drawVisuals = function(c) {
                     let scalingFactor = arguments.callee.caller.caller.arguments[0];
