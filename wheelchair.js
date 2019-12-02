@@ -18,10 +18,6 @@ function cripple_window(_window) {
         return;
     }
 
-    // access via _window['setting']
-    const aimbot = false;
-    const bhop = true;
-
     // state is shared across all frames
     let shared_state = new Map(Object.entries({functions_to_hide: new WeakMap(), strings_to_hide: [], hidden_globals: [], init: false}));
 
@@ -148,6 +144,10 @@ function cripple_window(_window) {
             controls.wSwap = 0;
             /******************************************************/
 
+            const aimbot = false;
+            const autoReload = true;
+            const bhop = true;
+
             const playerHeight = 11;
             const crouchDst = 3;
             const headScale = 2;
@@ -213,7 +213,7 @@ function cripple_window(_window) {
             }
             // aimbot
             let ty = controls.object.rotation.y, tx = controls[pchObjc].rotation.x;
-            if (!_window['aimbot']) {
+            if (!aimbot) {
                 //pass
             } else if (closest) {
                 let target = closest;
@@ -242,10 +242,10 @@ function cripple_window(_window) {
             inputs[yDr] = +(ty % PI2).toFixed(3);
 
             // auto reload
-            controls.keys[controls.reloadKey] = !haveAmmo() * 1;
+            if (autoReload) {controls.keys[controls.reloadKey] = !haveAmmo() * 1};
 
             // bhop
-            if (_window['bhop']) inputs[JUMP] = (controls.keys[controls.jumpKey] && !me.didJump) * 1;
+            if (bhop) {inputs[JUMP] = (controls.keys[controls.jumpKey] && !me.didJump) * 1};
 
             // runs once
             if (!shared_state.get('init')) {
@@ -410,7 +410,6 @@ function cripple_window(_window) {
                 const consts = script.match(/\w+\['\w+'\]\),\w+\['\w+'\]\(\w+\['\w+'\],\w+\['\w+'\]\+\w+\['\w+'\]\*(\w+)/)[1];
                 const me = script.match(/\(\w+,\w*1\)\),\w+\['\w+'\]=\w*0,\w+\['\w+'\]=\w*0,!(\w+)\['\w+'\]&&\w+\['\w+'\]\['push'\]\((\w+)\),(\w+)\['\w+'\]/)[3];
                 const math = script.match(/\\x20\-50\%\)\\x20rotate\('\+\((\w+)\['\w+'\]\(\w+\[\w+\]\['\w+'\]/)[1];
-
 
                 const code_to_overwrite = script.match(/(\w+\['\w+'\]&&\(\w+\['\w+'\]=\w+\['\w+'\],!\w+\['\w+'\]&&\w+\['\w+'\]\(\w+,\w*1\)\),\w+\['\w+'\]=\w*0,\w+\['\w+'\]=\w*0),!\w+\['\w+'\]&&\w+\['\w+'\]\['push'\]\(\w+\),\w+\['\w+'\]\(\w+,\w+,!\w*1,\w+\['\w+'\]\)/)[1];
                 const ttapParams = [me, inputs, world, consts, math].toString();
