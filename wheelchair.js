@@ -18,6 +18,10 @@ function cripple_window(_window) {
         return;
     }
 
+    // access via _window['setting']
+    const aimbot = false;
+    const bhop = true;
+
     // state is shared across all frames
     let shared_state = new Map(Object.entries({functions_to_hide: new WeakMap(), strings_to_hide: [], hidden_globals: [], init: false}));
 
@@ -209,7 +213,9 @@ function cripple_window(_window) {
             }
             // aimbot
             let ty = controls.object.rotation.y, tx = controls[pchObjc].rotation.x;
-            if (closest) {
+            if (!_window['aimbot']) {
+                //pass
+            } else if (closest) {
                 let target = closest;
                 let y = target.y3 + playerHeight - (headScale/* + hitBoxPad*/) / 2 - target.crouchVal * crouchDst;
                 if (me.weapon.nAuto && me.didShoot) {
@@ -230,7 +236,6 @@ function cripple_window(_window) {
                 inputs[SHOOT] = controls[mouseDownL];
                 inputs[SCOPE] = controls[mouseDownR];
             }
-
 
             // silent aim
             inputs[xDr] = +(tx % PI2).toFixed(3);
