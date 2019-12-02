@@ -147,6 +147,8 @@ function cripple_window(_window) {
             const aimbot = false;
             const autoReload = true;
             const bhop = true;
+            const boxEsp = true;
+            const chams = true;
 
             const playerHeight = 11;
             const crouchDst = 3;
@@ -317,17 +319,19 @@ function cripple_window(_window) {
                         let xScale = scaledWidth / distanceScale;
                         let yScale = scaledHeight / distanceScale;
 
-                        c.beginPath();
                         ymin = yScale * (1 - ymin);
                         ymax = yScale * (1 - ymax);
                         xmin = xScale * xmin;
                         xmax = xScale * xmax;
-                        c.moveTo(xmin, ymin);
-                        c.lineTo(xmin, ymax);
-                        c.lineTo(xmax, ymax);
-                        c.lineTo(xmax, ymin);
-                        c.lineTo(xmin, ymin);
-                        c.stroke();
+                        if (boxEsp) {
+                            c.beginPath();
+                            c.moveTo(xmin, ymin);
+                            c.lineTo(xmin, ymax);
+                            c.lineTo(xmax, ymax);
+                            c.lineTo(xmax, ymin);
+                            c.lineTo(xmin, ymin);
+                            c.stroke();
+                        }
 
                         // health bar
                         c.fillStyle = "rgba(255,50,50,1)";
@@ -361,7 +365,7 @@ function cripple_window(_window) {
 
                         // skelly chams
                         // note: this can be done better
-                        if (e.legMeshes[0]) {
+                        if (chams && e.legMeshes[0]) {
                             let material = e.legMeshes[0].material;
                             material.alphaTest = 1;
                             material.depthTest = false;
