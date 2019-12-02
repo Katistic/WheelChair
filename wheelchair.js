@@ -18,6 +18,17 @@ function cripple_window(_window) {
         return;
     }
 
+    const options = {
+      aimbot: false,
+      autoReload: true,
+      bhop: true,
+      boxEsp: true,
+      chams: true,
+      healthEsp: true,
+      nameEsp: true,
+      weaponEsp: true,
+    };
+
     // state is shared across all frames
     let shared_state = new Map(Object.entries({functions_to_hide: new WeakMap(), strings_to_hide: [], hidden_globals: [], init: false}));
 
@@ -30,6 +41,25 @@ function cripple_window(_window) {
             value: value
         });
     };
+
+
+    // https://github.com/MasterP-kr/WheelChair/blob/master/user.script.js#L174
+    let global_invisible_define = function (key, value) {
+        invisible_define(window, key, value);
+    };
+
+    // we generate random keys for global variables and make it almost impossible(?)
+    // for outsiders to find programatically
+    let keyMap = {};
+    let genKey = function () {
+        let a = new Uint8Array(20);
+        crypto.getRandomValues(a);
+        return 'hrt' + Array.from(a, x => ('0' + x.toString(16)).substr(-2)).join('');
+    }
+
+    keyMap['options'] = genKey();
+    global_invisible_define(keyMap['options'], options);
+    window.top.console.log(window[keyMap['options']])
 
     // unique to each user
     const master_key = 'ttap#4547';
@@ -144,15 +174,6 @@ function cripple_window(_window) {
             controls.wSwap = 0;
             /******************************************************/
 
-            const aimbot = false;
-            const autoReload = true;
-            const bhop = true;
-            const boxEsp = true;
-            const chams = true;
-            const healthEsp = true;
-            const nameEsp = true;
-            const weaponEsp = true;
-
             const playerHeight = 11;
             const crouchDst = 3;
             const headScale = 2;
@@ -218,7 +239,7 @@ function cripple_window(_window) {
             }
             // aimbot
             let ty = controls.object.rotation.y, tx = controls[pchObjc].rotation.x;
-            if (!aimbot) {
+            if (!window[keyMap['options']].aimbot) {
                 //pass
             } else if (closest) {
                 let target = closest;
@@ -247,10 +268,10 @@ function cripple_window(_window) {
             inputs[yDr] = +(ty % PI2).toFixed(3);
 
             // auto reload
-            if (autoReload) {controls.keys[controls.reloadKey] = !haveAmmo() * 1};
+            if (window[keyMap['options']].autoReload) {controls.keys[controls.reloadKey] = !haveAmmo() * 1};
 
             // bhop
-            if (bhop) {inputs[JUMP] = (controls.keys[controls.jumpKey] && !me.didJump) * 1};
+            if (window[keyMap['options']].bhop) {inputs[JUMP] = (controls.keys[controls.jumpKey] && !me.didJump) * 1};
 
             // runs once
             if (!shared_state.get('init')) {
@@ -326,7 +347,7 @@ function cripple_window(_window) {
                         ymax = yScale * (1 - ymax);
                         xmin = xScale * xmin;
                         xmax = xScale * xmax;
-                        if (boxEsp) {
+                        if (window[keyMap['options']].boxEsp) {
                             c.beginPath();
                             c.moveTo(xmin, ymin);
                             c.lineTo(xmin, ymax);
@@ -337,7 +358,7 @@ function cripple_window(_window) {
                         }
 
                         // health bar
-                        if (healthEsp) {
+                        if (window[keyMap['options']].healthEsp) {
                           c.fillStyle = "rgba(255,50,50,1)";
                           let barMaxHeight = ymax - ymin;
                           c.fillRect(xmin - 7, ymin, -10, barMaxHeight);
@@ -352,18 +373,18 @@ function cripple_window(_window) {
                         c.lineWidth = 1;
                         let x = xmax + 7;
                         let y = ymax;
-                        if (nameEsp) {
+                        if (window[keyMap['options']].nameEsp) {
                           c.fillText(e.name, x, y);
                           c.strokeText(e.name, x, y);
                         }
                         c.font = "30px Sans-serif";
                         y += 35;
-                        if (weaponEsp) {
+                        if (window[keyMap['options']].weaponEsp) {
                           c.fillText(e.weapon.name, x, y);
                           c.strokeText(e.weapon.name, x, y);
                         }
                         y += 35;
-                        if (healthEsp) {
+                        if (window[keyMap['options']].healthEsp) {
                           c.fillText(e.health + ' HP', x, y);
                           c.strokeText(e.health + ' HP', x, y);
                         }
@@ -376,7 +397,7 @@ function cripple_window(_window) {
 
                         // skelly chams
                         // note: this can be done better
-                        if (chams && e.legMeshes[0]) {
+                        if (window[keyMap['options']].chams && e.legMeshes[0]) {
                             let material = e.legMeshes[0].material;
                             material.alphaTest = 1;
                             material.depthTest = false;
