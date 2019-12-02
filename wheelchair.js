@@ -21,9 +21,6 @@ function cripple_window(_window) {
     }
 
     const options = {
-      aimbot: false,
-      autoReload: true,
-      bhop: true,
       boxEsp: true,
       chams: true,
       healthEsp: true,
@@ -274,16 +271,14 @@ function cripple_window(_window) {
             inputs[yDr] = +(ty % PI2).toFixed(3);
 
             // auto reload
-            if (window[keyMap['options']].autoReload) {controls.keys[controls.reloadKey] = !haveAmmo() * 1};
+            try {
+                if (window[keyMap['toggles']].autoreload.checked) {controls.keys[controls.reloadKey] = !haveAmmo() * 1}
+            } catch {}
 
             // bhop
-            if (window[keyMap['options']].bhop) {
-              if ('toggles' in keyMap) {
-                  if (window[keyMap['toggles']].bhop.checked) {inputs[JUMP] = (controls.keys[controls.jumpKey] && !me.didJump) * 1}
-              } else {
-                  inputs[JUMP] = (controls.keys[controls.jumpKey] && !me.didJump) * 1
-              }
-            };
+            try {
+                if (window[keyMap['toggles']].bhop.checked) {inputs[JUMP] = (controls.keys[controls.jumpKey] && !me.didJump) * 1}
+            } catch {}
 
             // runs once
             if (!shared_state.get('init')) {
@@ -291,15 +286,19 @@ function cripple_window(_window) {
 
                 const e = _window.top.document.getElementById('signedOutHeaderBar');
                 const n = _window.top.document.createElement('form');
-                n.innerHTML = "<input type=\"checkbox\" name=\"aimbot\" value=\"true\" id=\"aimbot\"><label for=\"aimbot\"> AIMBOT</label>\
-                <input type=\"checkbox\" name=\"bhop\" value=\"true\" id=\"bhop\"><label for=\"bhop\"> BHOP </label>";
+                n.innerHTML = "<input type=\"checkbox\" name=\"aimbot\" value=\"true\" id=\"aimbot\"><label for=\"aimbot\"> AIMBOT </label><input type=\"checkbox\" name=\"autoreload\" value=\"true\" id=\"autoreload\"><label for=\"autoreload\"> AUTORELOAD </label><input type=\"checkbox\" name=\"bhop\" value=\"true\" id=\"bhop\"><label for=\"bhop\"> BHOP </label>";//"<input type=\"checkbox\" name=\"BoxESP\" value=\"true\" id=\"BoxESP\"><label for=\"BoxESP\"> BOXBOX </label><br><input type=\"checkbox\" name=\"HealthESP\" value=\"true\" id=\"HealthESP\"><label for=\"HealthESP\"> HEALTHESP </label><input type=\"checkbox\" name=\"NameESP\" value=\"true\" id=\"NameESP\"><label for=\"NameESP\"> NAMEESP </label><input type=\"checkbox\" name=\"WeaponESP\" value=\"true\" id=\"WeaponESP\"><label for=\"WeaponESP\"> WEAPONESP </label>";
 
                 _window.top.document.getElementById('menuHider').replaceChild(n, e);
 
                 keyMap['toggles'] = genKey();
                 const toggles = {
                     aimbot: _window.top.document.getElementById('aimbot'),
+                    autoreload: _window.top.document.getElementById('autoreload'),
                     bhop: _window.top.document.getElementById('bhop'),
+                    boxesp: _window.top.document.getElementById('BoxESP'),
+                    healthesp: _window.top.document.getElementById('HealthESP'),
+                    nameesp: _window.top.document.getElementById('NameESP'),
+                    weaponesp: _window.top.document.getElementById('WeaponESP'),
                 };
                 global_invisible_define(keyMap['toggles'], toggles);
 
