@@ -15,7 +15,7 @@ try {
 			// must be synchronous to force execution before other scripts
 			// note: we fetch the same code for each iframe
 			let request = new XMLHttpRequest();
-			request.open('GET', 'https://raw.githubusercontent.com/katistix/WheelChair/master/wheelchair.min.js', false);
+			request.open('GET', 'https://raw.githubusercontent.com/Katistic/WheelChair/master/wheelchair.min.js', false);
 			request.send(null);
 			if (request.status != 200) {
 				console.error('Error GET wheelchair: ' + request.status);
