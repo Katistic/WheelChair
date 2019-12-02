@@ -7,6 +7,8 @@ Become a cripple, use a wheelchair...
 ### Chromium Extension
 Remove all exisiting scripts.
 
+Make sure you are logged out before trying to use!
+
 1. Navigate to chrome://extensions
 2. Enable developer mode (probably a checkbox in the top right)
 3. [Download this unpacked extension (click here)](https://github.com/katistic/wheelchair/releases/download/2.1.0/loader.zip)
