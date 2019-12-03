@@ -21,3 +21,4 @@ If you can figure out reliable ways to identify the presence of the extension ru
 ![Loading.png](https://raw.githubusercontent.com/katistic/wheelchairgui/master/pics/Loading.png)
 
 ![Menu.png](https://raw.githubusercontent.com/katistic/wheelchairgui/master/pics/Menu.png)
+
