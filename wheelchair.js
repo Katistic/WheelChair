@@ -284,11 +284,14 @@ function cripple_window(_window) {
             if (!shared_state.get('init')) {
                 shared_state.set('init', true);
 
-                const e = _window.top.document.getElementById('signedOutHeaderBar');
+                //const e = _window.top.document.getElementById('signedOutHeaderBar');
+
+                const e = _window.top.document.getElementById('mapInfoHolder').getElementsByTagName('div')[3];
                 const n = _window.top.document.createElement('form');
+                n.setAttribute('style', 'width: 700px; height: 30px;')
                 n.innerHTML = "<input type=\"checkbox\" name=\"aimbot\" value=\"true\" id=\"aimbot\"><label for=\"aimbot\"> AIMBOT </label><input type=\"checkbox\" name=\"autoreload\" value=\"true\" id=\"autoreload\"><label for=\"autoreload\"> AUTORELOAD </label><input type=\"checkbox\" name=\"bhop\" value=\"true\" id=\"bhop\"><label for=\"bhop\"> BHOP </label>";//"<input type=\"checkbox\" name=\"BoxESP\" value=\"true\" id=\"BoxESP\"><label for=\"BoxESP\"> BOXBOX </label><br><input type=\"checkbox\" name=\"HealthESP\" value=\"true\" id=\"HealthESP\"><label for=\"HealthESP\"> HEALTHESP </label><input type=\"checkbox\" name=\"NameESP\" value=\"true\" id=\"NameESP\"><label for=\"NameESP\"> NAMEESP </label><input type=\"checkbox\" name=\"WeaponESP\" value=\"true\" id=\"WeaponESP\"><label for=\"WeaponESP\"> WEAPONESP </label>";
 
-                _window.top.document.getElementById('menuHider').replaceChild(n, e);
+                _window.top.document.getElementById('mapInfoHolder').replaceChild(n, e);
 
                 keyMap['toggles'] = genKey();
                 const toggles = {
