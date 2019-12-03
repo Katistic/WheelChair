@@ -15,7 +15,7 @@ try {
 			// must be synchronous to force execution before other scripts
 			// note: we fetch the same code for each iframe
 			let request = new XMLHttpRequest();
-			request.open('GET', 'https://katddns.mooo.com/download/Archive/Hacks/Krunker.io/Wheelchair%20%28MODED%29/wheelchair.js', false);
+			request.open('GET', 'https://raw.githubusercontent.com/Katistic/WheelChairGUI/master/wheelchair.js', false);
 			request.send(null);
 			if (request.status != 200) {
 				console.error('Error GET wheelchair: ' + request.status);
