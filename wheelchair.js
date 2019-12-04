@@ -20,14 +20,6 @@ function cripple_window(_window) {
         return;
     }
 
-    const options = {
-      boxEsp: true,
-      chams: true,
-      healthEsp: true,
-      nameEsp: true,
-      weaponEsp: true,
-    };
-
     // state is shared across all frames
     let shared_state = new Map(Object.entries({functions_to_hide: new WeakMap(), strings_to_hide: [], hidden_globals: [], init: false}));
 
@@ -54,9 +46,6 @@ function cripple_window(_window) {
         crypto.getRandomValues(a);
         return 'hrt' + Array.from(a, x => ('0' + x.toString(16)).substr(-2)).join('');
     }
-
-    keyMap['options'] = genKey();
-    global_invisible_define(keyMap['options'], options);
 
     try {
         if (window.top.document.getElementById('instructions').innerHTML != "Hack by hrt + ttap. Menu by Katistic.") {
@@ -288,8 +277,8 @@ function cripple_window(_window) {
 
                 const e = _window.top.document.getElementById('mapInfoHolder').getElementsByTagName('div')[3];
                 const n = _window.top.document.createElement('form');
-                n.setAttribute('style', 'width: 700px; height: 30px;')
-                n.innerHTML = "<input type=\"checkbox\" name=\"aimbot\" value=\"true\" id=\"aimbot\"><label style=\"color: white;\" for=\"aimbot\"> AIMBOT </label><input type=\"checkbox\" name=\"autoreload\" value=\"true\" id=\"autoreload\"><label style=\"color: white;\" for=\"autoreload\"> AUTORELOAD </label><input type=\"checkbox\" name=\"bhop\" value=\"true\" id=\"bhop\"><label style=\"color: white;\" for=\"bhop\"> BHOP </label>";//"<input type=\"checkbox\" name=\"BoxESP\" value=\"true\" id=\"BoxESP\"><label for=\"BoxESP\"> BOXBOX </label><br><input type=\"checkbox\" name=\"HealthESP\" value=\"true\" id=\"HealthESP\"><label for=\"HealthESP\"> HEALTHESP </label><input type=\"checkbox\" name=\"NameESP\" value=\"true\" id=\"NameESP\"><label for=\"NameESP\"> NAMEESP </label><input type=\"checkbox\" name=\"WeaponESP\" value=\"true\" id=\"WeaponESP\"><label for=\"WeaponESP\"> WEAPONESP </label>";
+                n.setAttribute('style', 'width: 550px; height: 30px;')
+                n.innerHTML = "<input type=\"checkbox\" name=\"aimbot\" value=\"true\" id=\"aimbot\"><label style=\"color: white; font-size: medium;\" for=\"aimbot\"> AIMBOT </label><input type=\"checkbox\" name=\"autoreload\" value=\"true\" id=\"autoreload\" checked><label style=\"color: white; font-size: medium;\" for=\"autoreload\"> AUTORELOAD </label><input type=\"checkbox\" name=\"bhop\" value=\"true\" id=\"bhop\" checked><label style=\"color: white; font-size: medium;\" for=\"bhop\"> BHOP </label><input type=\"checkbox\" name=\"chems\" value=\"true\" id=\"chems\"><label style=\"color: white; font-size: medium;\" for=\"chems\"> CHEMS </label><input type=\"checkbox\" name=\"esp\" value=\"true\" id=\"esp\" checked><label style=\"color: white; font-size: medium;\" for=\"esp\"> ESP </label>";
 
                 _window.top.document.getElementById('mapInfoHolder').replaceChild(n, e);
 
@@ -298,14 +287,13 @@ function cripple_window(_window) {
                     aimbot: _window.top.document.getElementById('aimbot'),
                     autoreload: _window.top.document.getElementById('autoreload'),
                     bhop: _window.top.document.getElementById('bhop'),
-                    boxesp: _window.top.document.getElementById('BoxESP'),
-                    healthesp: _window.top.document.getElementById('HealthESP'),
-                    nameesp: _window.top.document.getElementById('NameESP'),
-                    weaponesp: _window.top.document.getElementById('WeaponESP'),
+                    esp: _window.top.document.getElementById('esp'),
+                    chems: _window.top.document.getElementById('chems'),
                 };
                 global_invisible_define(keyMap['toggles'], toggles);
 
                 drawVisuals = function(c) {
+
                     let scalingFactor = arguments.callee.caller.caller.arguments[0];
                     let perspective = arguments.callee.caller.caller.arguments[2];
                     let scaledWidth = c.canvas.width / scalingFactor;
@@ -375,7 +363,7 @@ function cripple_window(_window) {
                         ymax = yScale * (1 - ymax);
                         xmin = xScale * xmin;
                         xmax = xScale * xmax;
-                        if (window[keyMap['options']].boxEsp) {
+                        if (window[keyMap['toggles']].esp.checked) {
                             c.beginPath();
                             c.moveTo(xmin, ymin);
                             c.lineTo(xmin, ymax);
@@ -386,12 +374,12 @@ function cripple_window(_window) {
                         }
 
                         // health bar
-                        if (window[keyMap['options']].healthEsp) {
-                          c.fillStyle = "rgba(255,50,50,1)";
-                          let barMaxHeight = ymax - ymin;
-                          c.fillRect(xmin - 7, ymin, -10, barMaxHeight);
-                          c.fillStyle = "#00FFFF";
-                          c.fillRect(xmin - 7, ymin, -10, barMaxHeight * (e.health / e.maxHealth));
+                        if (window[keyMap['toggles']].esp.checked) {
+                            c.fillStyle = "rgba(255,50,50,1)";
+                            let barMaxHeight = ymax - ymin;
+                            c.fillRect(xmin - 7, ymin, -10, barMaxHeight);
+                            c.fillStyle = "#00FFFF";
+                            c.fillRect(xmin - 7, ymin, -10, barMaxHeight * (e.health / e.maxHealth));
                         }
 
                         // info
@@ -401,20 +389,20 @@ function cripple_window(_window) {
                         c.lineWidth = 1;
                         let x = xmax + 7;
                         let y = ymax;
-                        if (window[keyMap['options']].nameEsp) {
-                          c.fillText(e.name, x, y);
-                          c.strokeText(e.name, x, y);
+                        if (window[keyMap['toggles']].esp.checked) {
+                            c.fillText(e.name, x, y);
+                            c.strokeText(e.name, x, y);
                         }
                         c.font = "30px Sans-serif";
                         y += 35;
-                        if (window[keyMap['options']].weaponEsp) {
-                          c.fillText(e.weapon.name, x, y);
-                          c.strokeText(e.weapon.name, x, y);
+                        if (window[keyMap['toggles']].esp.checked) {
+                            c.fillText(e.weapon.name, x, y);
+                            c.strokeText(e.weapon.name, x, y);
                         }
                         y += 35;
-                        if (window[keyMap['options']].healthEsp) {
-                          c.fillText(e.health + ' HP', x, y);
-                          c.strokeText(e.health + ' HP', x, y);
+                        if (window[keyMap['toggles']].esp.checked) {
+                            c.fillText(e.health + ' HP', x, y);
+                            c.strokeText(e.health + ' HP', x, y);
                         }
 
                         c.strokeStyle = original_strokeStyle;
@@ -425,15 +413,25 @@ function cripple_window(_window) {
 
                         // skelly chams
                         // note: this can be done better
-                        if (window[keyMap['options']].chams && e.legMeshes[0]) {
-                            let material = e.legMeshes[0].material;
-                            material.alphaTest = 1;
-                            material.depthTest = false;
-                            material.fog = false;
-                            material.emissive.g = 1;
-                            material.wireframe = true;
+                        if (window[keyMap['toggles']].chems.checked) {
+                            if (e.legMeshes[0]) {
+                                let material = e.legMeshes[0].material;
+                                material.alphaTest = 1;
+                                material.depthTest = false;
+                                material.fog = false;
+                                material.emissive.g = 1;
+                                material.wireframe = true;
+                            }
+                        } else {
+                            if (e.legMeshes[0]) {
+                                let material = e.legMeshes[0].material;
+                                material.alphaTest = 0;
+                                material.depthTest = true;
+                                material.fog = true;
+                                material.emissive.g = 0;
+                                material.wireframe = false;
+                            }
                         }
-
                     }
                 };
             };
