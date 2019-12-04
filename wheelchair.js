@@ -207,6 +207,11 @@ function cripple_window(_window) {
             let isCloseEnough = function(player) {let distance = calcDistanceTo(player); return me.weapon.range >= distance && ("Shotgun" != me.weapon.name || distance < 70) && ("Akimbo Uzi" != me.weapon.name || distance < 100);};
             let haveAmmo = function() {return !(me.ammos[me.weaponIndex] !== undefined && me.ammos[me.weaponIndex] == 0);};
 
+            // Disable aimbot on death with sniper rifle
+            if (me.health <= 0 && me.weapon.name == "Sniper Rifle") {
+                window[keyMap['toggles']].aimbot.checked = 0;
+            }
+
             // target selector - based on closest to aim
             let closest = null, closestAngle = Infinity;
             let players = world.players.list;
@@ -241,8 +246,10 @@ function cripple_window(_window) {
                 } else if (!me.aimVal) {
                     inputs[SHOOT] = 1;
                     inputs[SCOPE] = 1;
+                    if (me.weapon.name == "Sniper Rifle") {window[keyMap['toggles']].aimbot.checked = 0};
                 } else {
                     inputs[SCOPE] = 1;
+                    //if (me.weapon.name == "Sniper Rifle") {window[keyMap['toggles']].aimbot.checked = 0}; TO BE SMART SNIPER
                 }
 
                 ty = getDir(controls.object.position.z, controls.object.position.x, target.z3, target.x3);
@@ -273,12 +280,10 @@ function cripple_window(_window) {
             if (!shared_state.get('init')) {
                 shared_state.set('init', true);
 
-                //const e = _window.top.document.getElementById('signedOutHeaderBar');
-
                 const e = _window.top.document.getElementById('mapInfoHolder').getElementsByTagName('div')[3];
                 const n = _window.top.document.createElement('form');
-                n.setAttribute('style', 'width: 550px; height: 30px;')
-                n.innerHTML = "<input type=\"checkbox\" name=\"aimbot\" value=\"true\" id=\"aimbot\"><label style=\"color: white; font-size: medium;\" for=\"aimbot\"> AIMBOT </label><input type=\"checkbox\" name=\"autoreload\" value=\"true\" id=\"autoreload\" checked><label style=\"color: white; font-size: medium;\" for=\"autoreload\"> AUTORELOAD </label><input type=\"checkbox\" name=\"bhop\" value=\"true\" id=\"bhop\" checked><label style=\"color: white; font-size: medium;\" for=\"bhop\"> BHOP </label><input type=\"checkbox\" name=\"chems\" value=\"true\" id=\"chems\"><label style=\"color: white; font-size: medium;\" for=\"chems\"> CHEMS </label><input type=\"checkbox\" name=\"esp\" value=\"true\" id=\"esp\" checked><label style=\"color: white; font-size: medium;\" for=\"esp\"> ESP </label>";
+                n.setAttribute('style', 'width: 600px; height: 30px;')
+                n.innerHTML = "<input type=\"checkbox\" name=\"aimbot\" value=\"true\" id=\"aimbot\"><label style=\"color: white; font-size: small;\" for=\"aimbot\"> AIMBOT (1) </label><input type=\"checkbox\" name=\"autoreload\" value=\"true\" id=\"autoreload\"><label style=\"color: white; font-size: small;\" for=\"autoreload\"> AUTORELOAD (2) </label><input type=\"checkbox\" name=\"bhop\" value=\"true\" id=\"bhop\"><label style=\"color: white; font-size: small;\" for=\"bhop\"> BHOP (3) </label><input type=\"checkbox\" name=\"chems\" value=\"true\" id=\"chems\"><label style=\"color: white; font-size: small;\" for=\"chems\"> CHEMS (4) </label><input type=\"checkbox\" name=\"esp\" value=\"true\" id=\"esp\" checked><label style=\"color: white; font-size: small;\" for=\"esp\"> ESP (5) </label>";
 
                 _window.top.document.getElementById('mapInfoHolder').replaceChild(n, e);
 
@@ -293,6 +298,30 @@ function cripple_window(_window) {
                 global_invisible_define(keyMap['toggles'], toggles);
 
                 drawVisuals = function(c) {
+
+                    // keybindings
+
+                    if (controls.keys[49]) {
+                        controls.keys[49] = 0
+                        _window.SOUND.play('tick_0',0.1)
+                        window[keyMap['toggles']].aimbot.checked = !(window[keyMap['toggles']].aimbot.checked)
+                    } else if (controls.keys[50]) {
+                        controls.keys[50] = 0
+                        _window.SOUND.play('tick_0',0.1)
+                        window[keyMap['toggles']].autoreload.checked = !(window[keyMap['toggles']].autoreload.checked)
+                    } else if (controls.keys[51]) {
+                        controls.keys[51] = 0
+                        _window.SOUND.play('tick_0',0.1)
+                        window[keyMap['toggles']].bhop.checked = !(window[keyMap['toggles']].bhop.checked)
+                    } else if (controls.keys[52]) {
+                        controls.keys[52] = 0
+                        _window.SOUND.play('tick_0',0.1)
+                        window[keyMap['toggles']].chems.checked = !(window[keyMap['toggles']].chems.checked)
+                    } else if (controls.keys[53]) {
+                        controls.keys[53] = 0
+                        _window.SOUND.play('tick_0',0.1)
+                        window[keyMap['toggles']].esp.checked = !(window[keyMap['toggles']].esp.checked)
+                    }
 
                     let scalingFactor = arguments.callee.caller.caller.arguments[0];
                     let perspective = arguments.callee.caller.caller.arguments[2];
@@ -341,7 +370,6 @@ function cripple_window(_window) {
                         ymin = (ymin + 1) / 2;
                         xmax = (xmax + 1) / 2;
                         ymax = (ymax + 1) / 2;
-
 
                         c.save();
                         // save and restore these variables later so they got nothing on us
