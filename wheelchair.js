@@ -208,9 +208,10 @@ function cripple_window(_window) {
             let haveAmmo = function() {return !(me.ammos[me.weaponIndex] !== undefined && me.ammos[me.weaponIndex] == 0);};
 
             // Disable aimbot on death with sniper rifle
+            /*
             if (me.health <= 0 && me.weapon.name == "Sniper Rifle") {
                 window[keyMap['toggles']].aimbot.checked = 0;
-            }
+            }*/
 
             // target selector - based on closest to aim
             let closest = null, closestAngle = Infinity;
