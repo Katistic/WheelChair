@@ -316,6 +316,10 @@ function cripple_window(_window) {
                         controls.keys[53] = 0
                         _window.SOUND.play('tick_0',0.1)
                         window[keyMap['toggles']].esp.checked = !(window[keyMap['toggles']].esp.checked)
+                    } else if (controls.keys[54]) {
+                        controls.keys[54] = 0
+                        _window.SOUND.play('tick_0',0.1)
+                        window[keyMap['toggles']].ss.checked = !(window[keyMap['toggles']].ss.checked)
                     }
 
                     let scalingFactor = arguments.callee.caller.caller.arguments[0];
