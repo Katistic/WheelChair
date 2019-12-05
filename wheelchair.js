@@ -247,7 +247,7 @@ function cripple_window(_window) {
                 } else if (!me.aimVal) {
                     inputs[SHOOT] = 1;
                     inputs[SCOPE] = 1;
-                    if (me.weapon.name == "Sniper Rifle") {window[keyMap['toggles']].aimbot.checked = 0};
+                    //if (me.weapon.name == "Sniper Rifle") {window[keyMap['toggles']].aimbot.checked = 0};
                 } else {
                     inputs[SCOPE] = 1;
                     //if (me.weapon.name == "Sniper Rifle") {window[keyMap['toggles']].aimbot.checked = 0}; TO BE SMART SNIPER
