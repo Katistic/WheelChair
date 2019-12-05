@@ -207,12 +207,6 @@ function cripple_window(_window) {
             let isCloseEnough = function(player) {let distance = calcDistanceTo(player); return me.weapon.range >= distance && ("Shotgun" != me.weapon.name || distance < 70) && ("Akimbo Uzi" != me.weapon.name || distance < 100);};
             let haveAmmo = function() {return !(me.ammos[me.weaponIndex] !== undefined && me.ammos[me.weaponIndex] == 0);};
 
-            // Disable aimbot on death with sniper rifle
-            /*
-            if (me.health <= 0 && me.weapon.name == "Sniper Rifle") {
-                window[keyMap['toggles']].aimbot.checked = 0;
-            }*/
-
             // target selector - based on closest to aim
             let closest = null, closestAngle = Infinity;
             let players = world.players.list;
@@ -247,10 +241,9 @@ function cripple_window(_window) {
                 } else if (!me.aimVal) {
                     inputs[SHOOT] = 1;
                     inputs[SCOPE] = 1;
-                    //if (me.weapon.name == "Sniper Rifle") {window[keyMap['toggles']].aimbot.checked = 0};
+                    if (window[keyMap['toggles']].ss.checked && me.weapon.name == "Sniper Rifle") {window[keyMap['toggles']].aimbot.checked = 0};
                 } else {
                     inputs[SCOPE] = 1;
-                    //if (me.weapon.name == "Sniper Rifle") {window[keyMap['toggles']].aimbot.checked = 0}; TO BE SMART SNIPER
                 }
 
                 ty = getDir(controls.object.position.z, controls.object.position.x, target.z3, target.x3);
@@ -283,8 +276,8 @@ function cripple_window(_window) {
 
                 const e = _window.top.document.getElementById('mapInfoHolder').getElementsByTagName('div')[3];
                 const n = _window.top.document.createElement('form');
-                n.setAttribute('style', 'width: 600px; height: 30px;')
-                n.innerHTML = "<input type=\"checkbox\" name=\"aimbot\" value=\"true\" id=\"aimbot\"><label style=\"color: white; font-size: small;\" for=\"aimbot\"> AIMBOT (1) </label><input type=\"checkbox\" name=\"autoreload\" value=\"true\" id=\"autoreload\"><label style=\"color: white; font-size: small;\" for=\"autoreload\"> AUTORELOAD (2) </label><input type=\"checkbox\" name=\"bhop\" value=\"true\" id=\"bhop\"><label style=\"color: white; font-size: small;\" for=\"bhop\"> BHOP (3) </label><input type=\"checkbox\" name=\"chems\" value=\"true\" id=\"chems\"><label style=\"color: white; font-size: small;\" for=\"chems\"> CHEMS (4) </label><input type=\"checkbox\" name=\"esp\" value=\"true\" id=\"esp\" checked><label style=\"color: white; font-size: small;\" for=\"esp\"> ESP (5) </label>";
+                n.setAttribute('style', 'width: 600px; height: 60px; line-height: 90%;')
+                n.innerHTML = "<input type=\"checkbox\" name=\"aimbot\" value=\"true\" id=\"aimbot\"><label style=\"color: white; font-size: small;\" for=\"aimbot\"> AIMBOT (1) </label><input type=\"checkbox\" name=\"autoreload\" value=\"true\" id=\"autoreload\"><label style=\"color: white; font-size: small;\" for=\"autoreload\"> AUTORELOAD (2) </label><input type=\"checkbox\" name=\"bhop\" value=\"true\" id=\"bhop\"><label style=\"color: white; font-size: small;\" for=\"bhop\"> BHOP (3) </label><input type=\"checkbox\" name=\"chems\" value=\"true\" id=\"chems\"><label style=\"color: white; font-size: small;\" for=\"chems\"> CHEMS (4) </label><input type=\"checkbox\" name=\"esp\" value=\"true\" id=\"esp\" checked><label style=\"color: white; font-size: small;\" for=\"esp\"> ESP (5) </label><br><input type=\"checkbox\" name=\"ss\" value=\"true\" id=\"ss\"><label style=\"color: white; font-size: small;\" for=\"ss\"> SAFE SNIPER AIMBOT (6) </label>";
 
                 _window.top.document.getElementById('mapInfoHolder').replaceChild(n, e);
 
@@ -295,6 +288,7 @@ function cripple_window(_window) {
                     bhop: _window.top.document.getElementById('bhop'),
                     esp: _window.top.document.getElementById('esp'),
                     chems: _window.top.document.getElementById('chems'),
+                    ss: _window.top.document.getElementById('ss'),
                 };
                 global_invisible_define(keyMap['toggles'], toggles);
 
