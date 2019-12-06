@@ -1,4 +1,11 @@
-# Outdated as of 1.9.1
+This repository follows and edits [hrt's wheelchair hack](https://github.com/hrt/WheelChair)
+As such this repo will always be updated after his.
+Please follow his repo for his amazing work!
+
+```diff
+! Outdated as of krunker.io version 1.9.1
+```
+
 
 ## ♿ 1.9.0 wheelchair
 Become a cripple, use a wheelchair...
