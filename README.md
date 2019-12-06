@@ -1,4 +1,5 @@
-This repository follows and edits [hrt's wheelchair hack](https://github.com/hrt/WheelChair)
+This repository follows and edits [hrt's wheelchair hack.](https://github.com/hrt/WheelChair)
+
 As such this repo will always be updated after his.
 Please follow his repo for his amazing work!
 
