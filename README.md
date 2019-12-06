@@ -1,7 +1,6 @@
-Uninstall old versions of this and all tampermonkey scripts and follow instructions bellow.
+# Outdated as of 1.9.1
 
-
-# ♿ 1.9.0 wheelchair
+## ♿ 1.9.0 wheelchair
 Become a cripple, use a wheelchair...
 
 ### Chromium Extension
