@@ -65,6 +65,14 @@ function cripple_window(_window) {
         shared_state = _window.top[master_key];
     }
 
+    let conceal_function = function(original_Function, hook_Function) {
+        shared_state.get('functions_to_hide').set(hook_Function, original_Function);
+    };
+
+    let conceal_string = function(original_string, hook_string) {
+        shared_state.get('strings_to_hide').push({from: new RegExp(hook_string.replace(/([\[|\]|\(|\)|\*|\\|\.|\+])/g,'\\$1'), 'g'), to: original_string});
+    };
+
     // hook toString to hide presence
     const original_toString = _window.Function.prototype.toString;
     let hook_toString = new Proxy(original_toString, {
@@ -89,14 +97,7 @@ function cripple_window(_window) {
         }
     });
     _window.Function.prototype.toString = hook_toString;
-
-    let conceal_function = function(original_Function, hook_Function) {
-        shared_state.get('functions_to_hide').set(hook_Function, original_Function);
-    };
-
-    let conceal_string = function(original_string, hook_string) {
-        shared_state.get('strings_to_hide').push({from: new RegExp(hook_string.replace(/([\[|\]|\(|\)|\*|\\|\.|\+])/g,'\\$1'), 'g'), to: original_string});
-    };
+    conceal_function(original_toString, hook_toString);
 
     // hook Object.getOwnPropertyDescriptors to hide variables from window
     const original_getOwnPropertyDescriptors = _window.Object.getOwnPropertyDescriptors;
@@ -134,6 +135,7 @@ function cripple_window(_window) {
         }
     });
     _window.CanvasRenderingContext2D.prototype.clearRect = hook_clearRect;
+    conceal_function(original_clearRect, hook_clearRect);
 
     // hook window.open to always return null
     // otherwise we would have to also patch native functions in new window
@@ -465,13 +467,14 @@ function cripple_window(_window) {
         })
     }
 
-    const handler = {
+    /*
+    const handler = new Proxy(original_){
         apply: function(target, _this, _arguments) {
             try {
                 var original_fn = Function.prototype.apply.apply(target, [_this, _arguments]);
             } catch (e) {
                 // modify stack trace to hide proxy
-                e.stack = e.stack.replace(/\n.*Object\.apply \(<.*/, '');
+                e.stack = e.stack.replace(/\n.*Object\.apply \(<.*-/, '');
                 throw e;
             }
 
@@ -507,7 +510,7 @@ function cripple_window(_window) {
                 /*
                     pad to avoid stack trace line:column number detection
                     the script will have the same length as it originally had
-                */
+                *-/
                 if (call_hrt.length + 4 > code_to_overwrite.length) {
                     throw 'WHEELCHAIR: target function too small ' + [call_hrt.length, code_to_overwrite.length];
                 }
@@ -521,13 +524,13 @@ function cripple_window(_window) {
                     // call_hrt += '*';
                     call_hrt += ' ';
                 }
-                // call_hrt += '*/';
+                // call_hrt += '*-/';
                 call_hrt += '  ';
 
                 script = script.replace(code_to_overwrite, call_hrt);
                 conceal_string(code_to_overwrite, call_hrt);
 
-                /***********************************************************************************************************/
+                /***********************************************************************************************************-/
                 /* Below are some misc features which I wouldn't consider bannable                                         */
                 // all weapons trails on
                 // script = script.replace(/\w+\['weapon'\]&&\w+\['weapon'\]\['trail'\]/g, "true")
@@ -537,7 +540,7 @@ function cripple_window(_window) {
 
                 // no zoom
                 // script = script.replace(/,'zoom':.+?(?=,)/g, ",'zoom':1");
-                /***********************************************************************************************************/
+                /***********************************************************************************************************-/
                 // bypass modification check of returned function
                 const original_script = _arguments[1];
                 _arguments[1] = script;
@@ -551,14 +554,55 @@ function cripple_window(_window) {
         }
     };
 
-    // we intercept game.js at the `Function` generation level
-    const original_Function = _window.Function;
-    let hook_Function = new Proxy(original_Function, handler);
-    _window.Function = hook_Function;
+    */
 
-    conceal_function(original_open, hook_open);
-    conceal_function(original_clearRect, hook_clearRect);
+    // we intercept game.js at the `Function` generation level
+    //const original_Function = _window.Function;
+    //let hook_Function = new Proxy(original_Function, handler);
+    //_window.Function = hook_Function;
+
+    const original_encode = _window.TextEncoder.prototype.encode;
+    let hook_encode = new Proxy(original_encode, {
+        apply: function(target, _this, _arguments) {
+            let game = false;
+            try {
+                if (_arguments[0].length > 1000) {
+                    script = _arguments[0]
+
+                    window['canSee'] = script.match(/,this\['(\w+)'\]=function\(\w+,\w+,\w+,\w+,\w+\){if\(!\w+\)return!\w+;/)[1];
+                    window['pchObjc'] = script.match(/\(\w+,\w+,\w+\),this\['(\w+)'\]=new \w+\['\w+'\]\(\)/)[1];
+                    window['objInstances'] = script.match(/\[\w+\]\['\w+'\]=!\w+,this\['\w+'\]\[\w+\]\['\w+'\]&&\(this\['\w+'\]\[\w+\]\['(\w+)'\]\['\w+'\]=!\w+/)[1];
+                    window['isYou'] = script.match(/,this\['\w+'\]=!\w+,this\['\w+'\]=!\w+,this\['(\w+)'\]=\w+,this\['\w+'\]\['length'\]=\w+,this\[/)[1];
+                    window['recoilAnimY'] = script.match(/\w*1,this\['\w+'\]=\w*0,this\['\w+'\]=\w*0,this\['\w+'\]=\w*1,this\['\w+'\]=\w*1,this\['\w+'\]=\w*0,this\['\w+'\]=\w*0,this\['(\w+)'\]=\w*0,this\['\w+'\]=\w*0,this\['\w+'\]=\w*0,this\['\w+'\]=\w*0,/)[1];
+                    window['mouseDownL'] = script.match(/this\['\w+'\]=function\(\){this\['(\w+)'\]=\w*0,this\['(\w+)'\]=\w*0,this\['\w+'\]={}/)[1];
+                    window['mouseDownR'] = script.match(/this\['\w+'\]=function\(\){this\['(\w+)'\]=\w*0,this\['(\w+)'\]=\w*0,this\['\w+'\]={}/)[2];
+
+                    const inputs = script.match(/\(\w+,\w*1\)\),\w+\['\w+'\]=\w*0,\w+\['\w+'\]=\w*0,!(\w+)\['\w+'\]&&\w+\['\w+'\]\['push'\]\((\w+)\),(\w+)\['\w+'\]/)[2];
+                    const world = script.match(/\(\w+,\w*1\)\),\w+\['\w+'\]=\w*0,\w+\['\w+'\]=\w*0,!(\w+)\['\w+'\]&&\w+\['\w+'\]\['push'\]\((\w+)\),(\w+)\['\w+'\]/)[1];
+                    const consts = script.match(/\w+\['\w+'\]\),\w+\['\w+'\]\(\w+\['\w+'\],\w+\['\w+'\]\+\w+\['\w+'\]\*(\w+)/)[1];
+                    const me = script.match(/\(\w+,\w*1\)\),\w+\['\w+'\]=\w*0,\w+\['\w+'\]=\w*0,!(\w+)\['\w+'\]&&\w+\['\w+'\]\['push'\]\((\w+)\),(\w+)\['\w+'\]/)[3];
+                    const math = script.match(/\\x20\-50\%\)\\x20rotate\('\+\((\w+)\['\w+'\]\(\w+\[\w+\]\['\w+'\]/)[1];
+
+                    const code_to_overwrite = script.match(/(\w+\['\w+'\]&&\(\w+\['\w+'\]=\w+\['\w+'\],!\w+\['\w+'\]&&\w+\['\w+'\]\(\w+,\w*1\)\),\w+\['\w+'\]=\w*0,\w+\['\w+'\]=\w*0),!\w+\['\w+'\]&&\w+\['\w+'\]\['push'\]\(\w+\),\w+\['\w+'\]\(\w+,\w+,!\w*1,\w+\['\w+'\]\)/)[1];
+                    const ttapParams = [me, inputs, world, consts, math].toString();
+                    let call_hrt = `top['` + master_key + `'].get('hrt')(` + ttapParams + `)`;
+
+                    game = true;
+                }
+            } catch (e) {
+              // modify stack trace to hide proxy
+              e.stack = e.stack.replace(/\n.*Object\.apply \(<.*/, '');
+              throw e;
+            }
+            if (game) _window.TextEncoder.prototype.encode = original_encode;
+            return _window.Function.prototype.apply.apply(target, [_this, _arguments])
+        }
+    }); _window.TextEncoder.prototype.encode = hook_encode;
+    conceal_function(original_encode, hook_encode)
+
+    //conceal_function(original_open, hook_open);
+    //conceal_function(original_clearRect, hook_clearRect);
     conceal_function(original_getOwnPropertyDescriptors, hook_getOwnPropertyDescriptors);
-    conceal_function(original_toString, hook_toString);
-    conceal_function(original_Function, hook_Function);
+    //conceal_function(original_toString, hook_toString);
+    //conceal_function(original_Function, hook_Function);
 }
