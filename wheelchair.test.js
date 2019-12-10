@@ -123,7 +123,6 @@ function cripple_window(_window) {
 		    let fullHeight = window.innerHeight;
 		    let scaledWidth = canvas.width / scale;
 		    let scaledHeight = canvas.height / scale;
-		    
 		    const Pi = Math.PI / 2;
 		    const PI2 = 2 * Math.PI;
 		    let controls = world.controls;
@@ -159,6 +158,8 @@ function cripple_window(_window) {
 
 		    let get = (entity, string) => {
 		        if (defined(entity) && entity && entity.active) {
+								_window.top.console.log(world[canSee])
+								_window.top.console.log("FUCK")
 		            switch (string) {
 		                case 'isYou': return entity[isYou];
 		                case 'objInstances': return entity[objInstances];
