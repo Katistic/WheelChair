@@ -123,7 +123,7 @@ function cripple_window(_window) {
 		    let fullHeight = window.innerHeight;
 		    let scaledWidth = canvas.width / scale;
 		    let scaledHeight = canvas.height / scale;
-		    //let camPos = renderer['camera'][getWorldPosition]; // ()
+		    
 		    const Pi = Math.PI / 2;
 		    const PI2 = 2 * Math.PI;
 		    let controls = world.controls;
