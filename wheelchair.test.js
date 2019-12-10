@@ -1,380 +1,564 @@
+// ==UserScript==
+// @name         Krunker WheelChair
+// @namespace    https://github.com/hrt
+// @version      1.9.0
+// @description  WheelChair
+// @author       hrt x ttap x katistic
+// @match        https://krunker.io/*
+// @run-at       document-start
+// @require      https://ajax.googleapis.com/ajax/libs/webfont/1/webfont.js
+// @require      https://krunkr.com/assets/js/canvas.gui.js?ver=0.6
+// @grant        none
+// ==/UserScript==
+
+// note:    this script gets injected into its own isolated context/iframe
+//          to console.log we would have to call window.top.console.log
+
 cripple_window(window.parent);
 function cripple_window(_window) {
-		if (!_window) {
-				return;
-		}
+    if (!_window) {
+        return;
+    }
 
-		let shared_state = new Map(Object.entries({functions_to_hide: new WeakMap(), strings_to_hide: [], hidden_globals: [], init: false}));
+    // state is shared across all frames
+    let shared_state = new Map(Object.entries({functions_to_hide: new WeakMap(), strings_to_hide: [], hidden_globals: [], init: false}));
 
-		let invisible_define = function(obj, key, value) {
-		    shared_state.get('hidden_globals').push(key);
-		    _window.top.Object.defineProperty(obj, key, {
-		        enumberable: false,
-		        configurable: false,
-		        writable: true,
-		        value: value
-		    });
-		};
+    let invisible_define = function(obj, key, value) {
+        shared_state.get('hidden_globals').push(key);
+        Object.defineProperty(obj, key, {
+            enumberable: false,
+            configurable: false,
+            writable: true,
+            value: value
+        });
+    };
 
-		let conceal_function = function(original_Function, hook_Function) {
-		    shared_state.get('functions_to_hide').set(hook_Function, original_Function);
-		};
+    // https://github.com/MasterP-kr/WheelChair/blob/master/user.script.js#L174
+    let global_invisible_define = function (key, value) {
+        invisible_define(window, key, value);
+    };
 
-		let conceal_string = function(original_string, hook_string) {
-		    shared_state.get('strings_to_hide').push({from: new RegExp(hook_string.replace(/([\[|\]|\(|\)|\*|\\|\.|\+])/g,'\\$1'), 'g'), to: original_string});
-		};
+    // we generate random keys for global variables and make it almost impossible(?)
+    // for outsiders to find programatically
+    let keyMap = {};
+    let genKey = function () {
+        let a = new Uint8Array(20);
+        crypto.getRandomValues(a);
+        return 'hrt' + Array.from(a, x => ('0' + x.toString(16)).substr(-2)).join('');
+    }
 
-		const original_toString = _window.top.Function.prototype.toString;
-		let hook_toString = new Proxy(original_toString, {
-		    apply: function(target, _this, _arguments) {
-		        try {
-		            var ret = _window.top.Function.prototype.apply.apply(target, [_this, _arguments]);
-		        } catch (e) {
-		            // modify stack trace to hide proxy
-		            e.stack = e.stack.replace(/\n.*Object\.apply \(<.*/, '');
-		            throw e;
-		        }
+    try {
+        if (window.top.document.getElementById('instructions').innerHTML != "Hack by hrt + ttap. Menu by Katistic.") {
+            window.top.document.getElementById('instructions').innerHTML = "Hack by hrt + ttap. Menu by Katistic."
+        }
+    } catch {
+        //pass
+    }
 
-		        let lookup_fn = shared_state.get('functions_to_hide').get(_this);
-		        if (lookup_fn) {
-		            return _window.top.Function.prototype.apply.apply(target, [lookup_fn, _arguments]);
-		        }
+    // unique to each user
+    const master_key = 'ttap#4547';
+    if (!_window.top[master_key]) {
+        // initialise top state
+        invisible_define(_window.top, master_key, shared_state);
+    } else {
+        // restore
+        shared_state = _window.top[master_key];
+    }
 
-		        for (var i = 0; i < shared_state.get('strings_to_hide').length; i++) {
-		            ret = ret.replace(shared_state.get('strings_to_hide')[i].from, shared_state.get('strings_to_hide')[i].to);
-		        }
-		        return ret;
-		    }
-		});
-		_window.top.Function.prototype.toString = hook_toString;
-		conceal_function(original_toString, hook_toString);
-		//
+    // hook toString to hide presence
+    const original_toString = _window.Function.prototype.toString;
+    let hook_toString = new Proxy(original_toString, {
+        apply: function(target, _this, _arguments) {
+            try {
+                var ret = Function.prototype.apply.apply(target, [_this, _arguments]);
+            } catch (e) {
+                // modify stack trace to hide proxy
+                e.stack = e.stack.replace(/\n.*Object\.apply \(<.*/, '');
+                throw e;
+            }
 
-		var distance, cnBSeen, canSee, pchObjc, objInstances, isYou, recoilAnimY, mouseDownL, mouseDownR, inputs, getWorldPosition;
-		_window.top.console.json = object => _window.top.console.log(JSON.stringify(object, undefined, 2));
-		const defined = object => typeof object !== "undefined";
+            let lookup_fn = shared_state.get('functions_to_hide').get(_this);
+            if (lookup_fn) {
+                return Function.prototype.apply.apply(target, [lookup_fn, _arguments]);
+            }
 
-		const original_encode = _window.top.TextEncoder.prototype.encode;
-		let hook_encode = new Proxy(original_encode, {
-		    apply: function(target, _this, _arguments) {
-		        let game = false;
-		        try {
-		            if (_arguments[0].length > 1000) {
-		                cnBSeen = _arguments[0].match(/this\['recon']=!0x1,this\['(\w+)']=!0x1/)[1];
-		                canSee = _arguments[0].match(/,this\['(\w+)'\]=function\(\w+,\w+,\w+,\w+,\w+\){if\(!\w+\)return!\w+;/)[1];
-		                pchObjc = _arguments[0].match(/\(\w+,\w+,\w+\),this\['(\w+)'\]=new \w+\['\w+'\]\(\)/)[1];
-		                objInstances = _arguments[0].match(/\[\w+\]\['\w+'\]=!\w+,this\['\w+'\]\[\w+\]\['\w+'\]&&\(this\['\w+'\]\[\w+\]\['(\w+)'\]\['\w+'\]=!\w+/)[1];
-		                isYou = _arguments[0].match(/,this\['\w+'\]=!\w+,this\['\w+'\]=!\w+,this\['(\w+)'\]=\w+,this\['\w+'\]\['length'\]=\w+,this\[/)[1];
-		                recoilAnimY = _arguments[0].match(/\w*1,this\['\w+'\]=\w*0,this\['\w+'\]=\w*0,this\['\w+'\]=\w*1,this\['\w+'\]=\w*1,this\['\w+'\]=\w*0,this\['\w+'\]=\w*0,this\['(\w+)'\]=\w*0,this\['\w+'\]=\w*0,this\['\w+'\]=\w*0,this\['\w+'\]=\w*0,/)[1];
-		                mouseDownL = _arguments[0].match(/this\['\w+'\]=function\(\){this\['(\w+)'\]=\w*0,this\['(\w+)'\]=\w*0,this\['\w+'\]={}/)[1];
-		                mouseDownR = _arguments[0].match(/this\['\w+'\]=function\(\){this\['(\w+)'\]=\w*0,this\['(\w+)'\]=\w*0,this\['\w+'\]={}/)[2];
-		                inputs = _arguments[0].match(/\(\w+,\w*1\)\),\w+\['\w+'\]=\w*0,\w+\['\w+'\]=\w*0,!(\w+)\['\w+'\]&&\w+\['\w+'\]\['push'\]\((\w+)\),(\w+)\['\w+'\]/)[2];
-		                getWorldPosition = _arguments[0].match(/\['camera']\['(\w+)']\(\);if/)[1]
+            for (var i = 0; i < shared_state.get('strings_to_hide').length; i++) {
+                ret = ret.replace(shared_state.get('strings_to_hide')[i].from, shared_state.get('strings_to_hide')[i].to);
+            }
+            return ret;
+        }
+    });
+    _window.Function.prototype.toString = hook_toString;
 
-		                game = true;
-		            }
+    let conceal_function = function(original_Function, hook_Function) {
+        shared_state.get('functions_to_hide').set(hook_Function, original_Function);
+    };
 
-		        } catch (e) {
-		            // modify stack trace to hide proxy
-		            e.stack = e.stack.replace(/\n.*Object\.apply \(<.*/, '');
-		            throw e;
-		        }
-		        if (game) _window.top.TextEncoder.prototype.encode = original_encode;
+    let conceal_string = function(original_string, hook_string) {
+        shared_state.get('strings_to_hide').push({from: new RegExp(hook_string.replace(/([\[|\]|\(|\)|\*|\\|\.|\+])/g,'\\$1'), 'g'), to: original_string});
+    };
 
-		        return _window.top.Function.prototype.apply.apply(target, [_this, _arguments]);
-		    }
-		}); _window.top.TextEncoder.prototype.encode = hook_encode;
-		conceal_function(original_encode, hook_encode);
+    // hook Object.getOwnPropertyDescriptors to hide variables from window
+    const original_getOwnPropertyDescriptors = _window.Object.getOwnPropertyDescriptors;
+    let hook_getOwnPropertyDescriptors = new Proxy(original_getOwnPropertyDescriptors, {
+        apply: function(target, _this, _arguments) {
+            try {
+                var descriptors = Function.prototype.apply.apply(target, [_this, _arguments]);
+            } catch (e) {
+                // modify stack trace to hide proxy
+                e.stack = e.stack.replace(/\n.*Object\.apply \(<.*/, '');
+                throw e;
+            }
+            for (var i = 0; i < shared_state.get('hidden_globals').length; i++) {
+                delete descriptors[shared_state.get('hidden_globals')[i]];
+            }
+            return descriptors;
+        }
+    });
+    _window.Object.getOwnPropertyDescriptors = hook_getOwnPropertyDescriptors;
 
-		let render = function() {
+    // drawVisuals gets overwritten later - place hook before anti cheat loads
+    let drawVisuals = function() {};
+    const original_clearRect = _window.CanvasRenderingContext2D.prototype.clearRect;
+    let hook_clearRect = new Proxy(original_clearRect, {
+        apply: function(target, _this, _arguments) {
+            try {
+                var ret = Function.prototype.apply.apply(target, [_this, _arguments]);
+            } catch (e) {
+                // modify stack trace to hide proxy
+                e.stack = e.stack.replace(/\n.*Object\.apply \(<.*/, '');
+                throw e;
+            }
+            drawVisuals(_this);
+            return ret;
+        }
+    });
+    _window.CanvasRenderingContext2D.prototype.clearRect = hook_clearRect;
 
-		    //DEFINES
-		    const args = arguments.callee.caller.caller.arguments;
-		    const me = args[3];
-		    if (!me) return;
-		    const scale = args[0];
-		    const world = args[1];
-		    const renderer = args[2];
-		    const scale2 = args[4];
-		    const canvas = _window.top.document.getElementById('game-overlay');
-		    const ctx = canvas.getContext("2d");
-		    const consts = {
-		        "cameraHeight": 1.5,
-		        "playerHeight": 11,
-		        "cameraHeight": 1.5,
-		        "headScale": 2,
-		        "crouchDst": 3,
-		        "camChaseTrn": 0.0022,
-		        "camChaseSpd": 0.0012,
-		        "camChaseSen": 0.2,
-		        "camChaseDst": 24,
-		        "recoilMlt": 0.3,
-		        "nameOffset": 0.6,
-		        "nameOffsetHat": 0.8,
-		    };
-		    const fonts = {
-		        ssBig: '30px\x20Sans-serif',
-		        ssSmall: '20px\x20Sans-serif',
-		        gmBig: '30px\x20GameFont',
-		        gmSmall: '20px\x20GameFont'
-		    }
-		    _window.top.console.dir(window)
-		    let fullWidth = window.innerWidth;
-		    let fullHeight = window.innerHeight;
-		    let scaledWidth = canvas.width / scale;
-		    let scaledHeight = canvas.height / scale;
-		    const Pi = Math.PI / 2;
-		    const PI2 = 2 * Math.PI;
-		    let controls = world.controls;
-		    let players = world.players.list;
-		    let entities = players.filter(x => { return x.active && !x[isYou] });
+    // hook window.open to always return null
+    // otherwise we would have to also patch native functions in new window
+    const original_open = _window.open;
+    let hook_open = new Proxy(original_open, {
+        apply: function(target, _this, _arguments) {
+            try {
+                let ret = Function.prototype.apply.apply(target, [_this, _arguments]);
+            } catch (e) {
+                // modify stack trace to hide proxy
+                e.stack = e.stack.replace(/\n.*Object\.apply \(<.*/, '');
+                throw e;
+            }
+            return null;
+        }
+    });
+    _window.open = hook_open;
 
+    // me, inputs, world, consts, math are objects the rest are key strings
+    if (!shared_state.get('hrt')) {
+        shared_state.set('hrt', function(me, inputs, world, consts, math) {
+            /******************************************************/
+            /* re implements code that we overwrote to place hook */
+            let controls = world.controls;
+            if (controls.scrollDelta) {
+                controls.skipScroll = controls.scrollToSwap;
+                if (!controls.scrollToSwap) {
+                    controls.fakeKey(0x4e20,0x1);
+                }
+            }
+            controls.scrollDelta = 0;
+            controls.wSwap = 0;
+            /******************************************************/
 
-		     //FUNCTIONS
-		     let getDistance3D = (fromX, fromY, fromZ, toX, toY, toZ) => {
-		        var distX = fromX - toX,
-		            distY = fromY - toY,
-		            distZ = fromZ - toZ;
-		        return Math.sqrt(distX * distX + distY * distY + distZ * distZ);
-		    }
+            const playerHeight = 11;
+            const crouchDst = 3;
+            const headScale = 2;
+            const hitBoxPad = 1;
+            const armScale = 1.3;
+            const chestWidth = 2.6;
+            const armInset = -.1;
+            const playerScale = (2 * armScale + chestWidth + armInset) / 2;
+            const SHOOT = 5, SCOPE = 6, xDr = 3, yDr = 2, JUMP = 7, CROUCH = 8;
+            const PI2 = Math.PI * 2;
+            let isEnemy = function(player) {return !me.team || player.team != me.team};
+            let canHit = function(player) {return null == world[canSee](me, player.x3, player.y3 - player.crouchVal * crouchDst, player.z3)};
+            let normaliseYaw = function(yaw) {return (yaw % PI2 + PI2) % PI2;};
+            let getDir = function(a, b, c, d) {
+                return Math.atan2(b - d, a - c);
+            };
+            let getD3D = function(a, b, c, d, e, f) {
+                let g = a - d, h = b - e, i = c - f;
+                return Math.sqrt(g * g + h * h + i * i);
+            };
+            let getXDire = function(a, b, c, d, e, f) {
+                let g = Math.abs(b - e), h = getD3D(a, b, c, d, e, f);
+                return Math.asin(g / h) * (b > e ? -1 : 1);
+            };
 
-		    let getDistance = (player1, player2) => {
-		        return getDistance3D(player1.x, player1.y, player1.z, player2.x, player2.y, player2.z);
-		    }
+            let dAngleTo = function(x, y, z) {
+                let ty = normaliseYaw(getDir(controls.object.position.z, controls.object.position.x, z, x));
+                let tx = getXDire(controls.object.position.x, controls.object.position.y, controls.object.position.z, x, y, z);
+                let oy = normaliseYaw(controls.object.rotation.y);
+                let ox = controls[pchObjc].rotation.x;
+                let dYaw = Math.min(Math.abs(ty - oy), Math.abs(ty - oy - PI2), Math.abs(ty - oy + PI2));
+                let dPitch = tx - ox;
+                return Math.hypot(dYaw, dPitch);
+            };
+            let calcAngleTo = function(player) {return dAngleTo(player.x3, player.y3 + playerHeight - (headScale + hitBoxPad) / 2 - player.crouchVal * crouchDst, player.z3);};
+            let calcDistanceTo = function(player) {return getD3D(player.x3, player.y3, player.z3, me.x, me.y, me.z)};
+            let isCloseEnough = function(player) {let distance = calcDistanceTo(player); return me.weapon.range >= distance && ("Shotgun" != me.weapon.name || distance < 70) && ("Akimbo Uzi" != me.weapon.name || distance < 100);};
+            let haveAmmo = function() {return !(me.ammos[me.weaponIndex] !== undefined && me.ammos[me.weaponIndex] == 0);};
 
-		    let getDirection = (fromZ, fromX, toZ, toX) => {
-		        return Math.atan2(fromX - toX, fromZ - toZ);
-		    }
+            // target selector - based on closest to aim
+            let closest = null, closestAngle = Infinity;
+            let players = world.players.list;
+            for (var i = 0; me.active && i < players.length; i++) {
+                let e = players[i];
+                if (e[isYou] || !e.active || !e[objInstances] || !isEnemy(e)) {
+                    continue;
+                }
 
-		    let getXDir = (fromX, fromY, fromZ, toX, toY, toZ) => {
-		        var dirY = Math.abs(fromY - toY),
-		            dist = getDistance3D(fromX, fromY, fromZ, toX, toY, toZ);
-		        return Math.asin(dirY / dist) * (fromY > toY ? -1 : 1);
-		    }
+                // experimental prediction removed
+                e.x3 = e.x;
+                e.y3 = e.y;
+                e.z3 = e.z;
 
-		    let getAngleDist = (start, end) => {
-		        return Math.atan2(Math.sin(end - start), Math.cos(start - end));
-		    }
+                if (!isCloseEnough(e) || !canHit(e)) {
+                    continue;
+                }
 
-		    let get = (entity, string) => {
-		        if (defined(entity) && entity && entity.active) {
-								_window.top.console.log(world[canSee])
-								_window.top.console.log("FUCK")
-		            switch (string) {
-		                case 'isYou': return entity[isYou];
-		                case 'objInstances': return entity[objInstances];
-		                
-		                case 'isFriendly': return (me && me.team ? me.team : me.spectating ? 0x1 : 0x0) == entity.team;
-		                case 'recoilAnimY': return entity[recoilAnimY];
-		            }
-		        }
-		        return null;
-		    }
+                let angle = calcAngleTo(e);
+                if (angle < closestAngle) {
+                    closestAngle = angle;
+                    closest = e;
+                }
+            }
+            // aimbot
+            let ty = controls.object.rotation.y, tx = controls[pchObjc].rotation.x;
+            if (closest && window[keyMap['toggles']].aimbot.checked) {
+                let target = closest;
+                let y = target.y3 + playerHeight - (headScale/* + hitBoxPad*/) / 2 - target.crouchVal * crouchDst;
+                if (me.weapon.nAuto && me.didShoot) {
+                    inputs[SHOOT] = 0;
+                } else if (!me.aimVal) {
+                    inputs[SHOOT] = 1;
+                    inputs[SCOPE] = 1;
+                    if (window[keyMap['toggles']].ss.checked && me.weapon.name == "Sniper Rifle") {window[keyMap['toggles']].aimbot.checked = 0};
+                } else {
+                    inputs[SCOPE] = 1;
+                }
 
-		    let getTarget = () => {
-		        if (!defined (distance)) distance = Infinity;
-		        for (const entity of players.filter(x => { return x.active && !get(x,"isYou") && get(x,"inView") && !get(x,"isFriendly") && x.health > 0})) {
-		            if (defined(entity[objInstances])) {
-		                const entityPos = entity[objInstances].position;
-		                if (renderer.frustum.containsPoint(entityPos)) {
-		                    const dist = entityPos.distanceTo(me);
-		                    if (dist <= distance) {
-		                        me.distance = dist;
-		                        return entity;
-		                    }
-		                }
-		            }
-		        }
-		        distance = Infinity;
-		        return null;
-		    }
+                ty = getDir(controls.object.position.z, controls.object.position.x, target.z3, target.x3);
+                tx = getXDire(controls.object.position.x, controls.object.position.y, controls.object.position.z, target.x3, y, target.z3);
 
-		    let camLookAt = (target) => {
-		        if (!defined(controls) || target === null || (target.x + target.y + target.z2) == 0) return void(controls.target = null);
-		        let offset1 = ((consts.playerHeight - consts.cameraHeight) - (target.crouchVal * consts.crouchDst));
-		        let offset2 = consts.playerHeight - consts.headScale / 2 - target.crouchVal * consts.crouchDst;
-		        let recoil = (get(me, "recoilAnimY") * consts.recoilMlt) * 25;
-		        let xdir = getXDir(controls.object.position.x, controls.object.position.y, controls.object.position.z, target.x, (target.y + offset1) - recoil, target.z);
-		        let ydir = getDirection(controls.object.position.z, controls.object.position.x, target.z, target.x);
-		        controls.target = {
-		            xD:xdir,
-		            yD: ydir,
-		            x: target.x + consts.camChaseDst * Math.sin(ydir) * Math.cos(xdir),
-		            y: target.y - consts.camChaseDst * Math.sin(xdir),
-		            z: target.z + consts.camChaseDst * Math.cos(ydir) * Math.cos(xdir)
-		        }
-		    }
+                // perfect recoil control
+                tx -= .3 * me[recoilAnimY];
+            } else {
+                inputs[SHOOT] = controls[mouseDownL];
+                inputs[SCOPE] = controls[mouseDownR];
+            }
 
-		    let world2Screen = (camera, position) => {
-		        let pos = position.clone();
-		        pos.project(camera);
-		        pos.x = (pos.x + 1) / 2;
-		        pos.y = (-pos.y + 1) / 2;
-		        pos.x *= scaledWidth;
-		        pos.y *= scaledHeight;
-		        return pos;
-		    }
+            // silent aim
+            inputs[xDr] = +(tx % PI2).toFixed(3);
+            inputs[yDr] = +(ty % PI2).toFixed(3);
 
-		    let pixelTranslate = (ctx, x, y) => {
-		        ctx.translate(~~x, ~~y);
-		    }
+            // auto reload
+            try {
+                if (window[keyMap['toggles']].autoreload.checked) {controls.keys[controls.reloadKey] = !haveAmmo() * 1}
+            } catch {}
 
-		    let pixelDifference = (pos1, Pos2, multi) => {
-		        const hDiff = ~~(pos1.y - Pos2.y);
-		        return [hDiff, ~~(hDiff * multi)]
-		    }
+            // bhop
+            try {
+                if (window[keyMap['toggles']].bhop.checked) {inputs[JUMP] = (controls.keys[controls.jumpKey] && !me.didJump) * 1}
+            } catch {}
 
-		    let text = (txt, font, color, x, y) => {
-		        ctx.save();
-		        pixelTranslate(ctx, x, y);
-		        ctx.fillStyle = color;
-		        ctx.strokeStyle = "rgba(0, 0, 0, 0.5)";
-		        ctx.font = font;
-		        ctx.lineWidth = 1;
-		        ctx.strokeText(txt, 0, 0);
-		        ctx.fillText(txt, 0, 0);
-		        ctx.restore();
-		    }
+            // runs once
+            if (!shared_state.get('init')) {
+                shared_state.set('init', true);
 
-		    let rect = (x, y, ox, oy, w, h, color, fill) => {
-		        ctx.save();
-		        pixelTranslate(ctx, x, y);
-		        ctx.beginPath();
-		        fill ? ctx.fillStyle = color : ctx.strokeStyle = color;
-		        ctx.rect(ox, oy, w, h);
-		        fill ? ctx.fill() : ctx.stroke();
-		        ctx.closePath();
-		        ctx.restore();
-		    }
+                const e = _window.top.document.getElementById('mapInfoHolder').getElementsByTagName('div')[3];
+                const n = _window.top.document.createElement('form');
+                n.setAttribute('style', 'width: 600px; height: 60px; line-height: 90%;')
+                n.innerHTML = "<input type=\"checkbox\" name=\"aimbot\" value=\"true\" id=\"aimbot\"><label style=\"color: white; font-size: small;\" for=\"aimbot\"> AIMBOT (1) </label><input type=\"checkbox\" name=\"autoreload\" value=\"true\" id=\"autoreload\"><label style=\"color: white; font-size: small;\" for=\"autoreload\"> AUTORELOAD (2) </label><input type=\"checkbox\" name=\"bhop\" value=\"true\" id=\"bhop\"><label style=\"color: white; font-size: small;\" for=\"bhop\"> BHOP (3) </label><input type=\"checkbox\" name=\"chems\" value=\"true\" id=\"chems\"><label style=\"color: white; font-size: small;\" for=\"chems\"> CHEMS (4) </label><input type=\"checkbox\" name=\"esp\" value=\"true\" id=\"esp\" checked><label style=\"color: white; font-size: small;\" for=\"esp\"> ESP (5) </label><br><input type=\"checkbox\" name=\"ss\" value=\"true\" id=\"ss\"><label style=\"color: white; font-size: small;\" for=\"ss\"> SAFE SNIPER AIMBOT (6) </label>";
 
-		    let line = (x1, y1, x2, y2, lW, sS) => {
-		        ctx.save();
-		        ctx.lineWidth = lW + 2;
-		        ctx.beginPath();
-		        ctx.moveTo(x1, y1);
-		        ctx.lineTo(x2, y2);
-		        ctx.strokeStyle = "rgba(0, 0, 0, 0.25)";
-		        ctx.stroke();
-		        ctx.lineWidth = lW;
-		        ctx.strokeStyle = sS;
-		        ctx.stroke();
-		        ctx.restore();
-		    }
+                _window.top.document.getElementById('mapInfoHolder').replaceChild(n, e);
 
-		    let image = (x, y, img, ox, oy, w, h) => {
-		        ctx.save();
-		        ctx.translate(x, y);
-		        ctx.beginPath();
-		        ctx.drawImage(img, ox, oy, w, h);
-		        ctx.closePath();
-		        ctx.restore();
-		    }
+                keyMap['toggles'] = genKey();
+                const toggles = {
+                    aimbot: _window.top.document.getElementById('aimbot'),
+                    autoreload: _window.top.document.getElementById('autoreload'),
+                    bhop: _window.top.document.getElementById('bhop'),
+                    esp: _window.top.document.getElementById('esp'),
+                    chems: _window.top.document.getElementById('chems'),
+                    ss: _window.top.document.getElementById('ss'),
+                };
+                global_invisible_define(keyMap['toggles'], toggles);
 
-		    let getTextMeasurements = (arr) => {
-		        for (let i = 0; i < arr.length; i++) {
-		            arr[i] = ~~ctx.measureText(arr[i]).width;
-		        }
-		        return arr;
-		    }
+                drawVisuals = function(c) {
 
-		    let byte2Hex = (n) => {
-		        var chars = "0123456789ABCDEF";
-		        return String(chars.substr((n >> 4) & 0x0F,1)) + chars.substr(n & 0x0F,1);
-		    }
+                    // keybindings
 
-		    let rgba2hex = (r,g,b,a = 255) => ("#").concat(byte2Hex(r),byte2Hex(g),byte2Hex(b),byte2Hex(a));
+                    if (controls.keys[49]) {
+                        controls.keys[49] = 0
+                        _window.SOUND.play('tick_0',0.1)
+                        window[keyMap['toggles']].aimbot.checked = !(window[keyMap['toggles']].aimbot.checked)
+                    } else if (controls.keys[50]) {
+                        controls.keys[50] = 0
+                        _window.SOUND.play('tick_0',0.1)
+                        window[keyMap['toggles']].autoreload.checked = !(window[keyMap['toggles']].autoreload.checked)
+                    } else if (controls.keys[51]) {
+                        controls.keys[51] = 0
+                        _window.SOUND.play('tick_0',0.1)
+                        window[keyMap['toggles']].bhop.checked = !(window[keyMap['toggles']].bhop.checked)
+                    } else if (controls.keys[52]) {
+                        controls.keys[52] = 0
+                        _window.SOUND.play('tick_0',0.1)
+                        window[keyMap['toggles']].chems.checked = !(window[keyMap['toggles']].chems.checked)
+                    } else if (controls.keys[53]) {
+                        controls.keys[53] = 0
+                        _window.SOUND.play('tick_0',0.1)
+                        window[keyMap['toggles']].esp.checked = !(window[keyMap['toggles']].esp.checked)
+                    } else if (controls.keys[54]) {
+                        controls.keys[54] = 0
+                        _window.SOUND.play('tick_0',0.1)
+                        window[keyMap['toggles']].ss.checked = !(window[keyMap['toggles']].ss.checked)
+                    }
 
-		    //ONTICK STUFF
+                    let scalingFactor = arguments.callee.caller.caller.arguments[0];
+                    let perspective = arguments.callee.caller.caller.arguments[2];
+                    let scaledWidth = c.canvas.width / scalingFactor;
+                    let scaledHeight = c.canvas.height / scalingFactor;
+                    let worldPosition = perspective.camera.getWorldPosition();
+                    for (var i = 0; i < world.players.list.length; i++) {
+                        let player = world.players.list[i];
+                        let e = players[i];
+                        if (e[isYou] || !e.active || !e[objInstances] || !isEnemy(e)) {
+                            continue;
+                        }
 
-		     // target update
-		     if (defined(controls.target) && controls.target !== null) {
-		        controls.object.rotation.y = controls.target.yD;
-		        controls[pchObjc].rotation.x = controls.target.xD;
-		        controls[pchObjc].rotation.x = Math.max(-Pi, Math.min(Pi, controls[pchObjc].rotation.x));
-		        controls.yDr = controls[pchObjc].rotation.x % Math.PI;
-		        controls.xDr = controls.object.rotation.y % Math.PI;
-		    }  else controls.target = null;
+                        // the below variables correspond to the 2d box esps corners
+                        // note: we can already tell what ymin ymax is
+                        let xmin = Infinity;
+                        let xmax = -Infinity;
+                        let ymin = Infinity;
+                        let ymax = -Infinity;
+                        let br = false;
+                        for (var j = -1; !br && j < 2; j+=2) {
+                            for (var k = -1; !br && k < 2; k+=2) {
+                                for (var l = 0; !br && l < 2; l++) {
+                                    let position = e[objInstances].position.clone();
+                                    position.x += j * playerScale;
+                                    position.z += k * playerScale;
+                                    position.y += l * (playerHeight - e.crouchVal * crouchDst);
+                                    if (!perspective.frustum.containsPoint(position)) {
+                                        br = true;
+                                        break;
+                                    }
+                                    position.project(perspective.camera);
+                                    xmin = Math.min(xmin, position.x);
+                                    xmax = Math.max(xmax, position.x);
+                                    ymin = Math.min(ymin, position.y);
+                                    ymax = Math.max(ymax, position.y);
+                                }
+                            }
+                        }
 
-		    //aim assist
-		    const target = getTarget();
-		    if (target) {
-		        if (controls[mouseDownR] == 1) {
-		            camLookAt(target);
-		        }
-		    }
-		    else {
-		        if (controls.target) camLookAt(null);
-		    }
+                        if (br) {
+                            continue;
+                        }
 
-		    //auto reload - they have crypted the me.ammos as well have to find this one
-		    if (defined(me.ammos)) {
-		        const ammoLeft = me.ammos[me.weaponIndex];
-		        if (ammoLeft === 0) {
-		            players.reload(me);
-		            if (ammoLeft) players.endReload(me.weapon);
-		        }
-		    }
+                        xmin = (xmin + 1) / 2;
+                        ymin = (ymin + 1) / 2;
+                        xmax = (xmax + 1) / 2;
+                        ymax = (ymax + 1) / 2;
 
-		    //ESP / Chams
-		    entities.map((entity, index, array)=> {
-		        if (defined(entity[objInstances])) {
-		/*
-		            let isFriendly = get(entity, 'isFriendly');
-		            let teamCol = isFriendly ? '#44AAFF' : '#FF4444';
+                        c.save();
+                        // save and restore these variables later so they got nothing on us
+                        const original_strokeStyle = c.strokeStyle;
+                        const original_lineWidth = c.lineWidth;
+                        const original_font = c.font;
+                        const original_fillStyle = c.fillStyle;
 
-		            let entityPos = entity[objInstances].position;
-		            if (renderer.frustum.containsPoint(entityPos)) {
-		                let entitynamePos = entityPos.clone().setY(entityPos.y + (consts.playerHeight + (0x0 <= entity.hatIndex ? consts.nameOffsetHat : 0) + consts.nameOffset - entity.crouchVal * consts.crouchDst));
-		                let entityScrPosName = entitynamePos.clone();
-		                let playerScaled = Math.max(0.3, 1 - camPos.distanceTo(entityScrPosName) / 600);
-		                let entityScrPosBase = world2Screen(renderer.camera, entityPos);
-		                let entityScrPosHead = world2Screen(renderer.camera, entityPos.setY(entityPos.y + consts.playerHeight - entity.crouchVal * consts.crouchDst));
-		                let entityScrPxlDiff = pixelDifference(entityScrPosBase, entityScrPosHead, 0.6);
-		                //2d
-		                //rect(entityScrPosHead.x - entityScrPxlDiff[1] / 2, entityScrPosHead.y, 0, 0, entityScrPxlDiff[1], entityScrPxlDiff[0], teamCol, false);
+                        // perfect box esp
+                        c.lineWidth = 5;
+                        c.strokeStyle = 'rgba(255,50,50,1)';
 
-		                //Tracers
-		                //line(fullWidth / 2, fullHeight - (fullHeight - scaledHeight), entityScrPosBase.x, entityScrPosBase.y, 2.5, teamCol);
-		*/
-		                //Chams
-		                entity[cnBSeen] = true;
-		                for (let i = 0; i < entity[objInstances].children.length; i++) {
-		                    const object3d = entity[objInstances].children[i];
-		                    for (let j = 0; j < object3d.children.length; j++) {
-		                        const mesh = object3d.children[j];
-		                        if (mesh && mesh.type == "Mesh") {
-		                            const material = mesh.material;
-		                            material.depthTest = false;
-		                            material.fog = false;
-		                            material.emissive.r = 1;
-		                            material.colorWrite = true;
-		                            material.transparent = true;
-		                            material.opacity = 1.0;
-		                            //material.needsUpdate = true;
-		                            //material.wireframe = !canHit(entity);
-		                        }
-		                    }
-		                }
-		            }
-		        //}
-		    });
-		};
-		const clearRect = _window.top.CanvasRenderingContext2D.prototype.clearRect;
-		const original_clearRect = _window.top.CanvasRenderingContext2D.prototype.scale;
-		let hook_clearRect = new Proxy(original_clearRect, {
-		    apply: function(target, _this, _arguments) {
-		        try {
-		            var ret = _window.top.Function.prototype.apply.apply(target, [_this, _arguments]);
-		        } catch (e) {
-		            // modify stack trace to hide proxy
-		            e.stack = e.stack.replace(/\n.*Object\.apply \(<.*/, '');
-		            throw e;
-		        }
+                        let distanceScale = Math.max(.3, 1 - getD3D(worldPosition.x, worldPosition.y, worldPosition.z, e.x, e.y, e.z) / 600);
+                        c.scale(distanceScale, distanceScale);
+                        let xScale = scaledWidth / distanceScale;
+                        let yScale = scaledHeight / distanceScale;
 
-		        render(_this);
+                        ymin = yScale * (1 - ymin);
+                        ymax = yScale * (1 - ymax);
+                        xmin = xScale * xmin;
+                        xmax = xScale * xmax;
+                        if (window[keyMap['toggles']].esp.checked) {
+                            c.beginPath();
+                            c.moveTo(xmin, ymin);
+                            c.lineTo(xmin, ymax);
+                            c.lineTo(xmax, ymax);
+                            c.lineTo(xmax, ymin);
+                            c.lineTo(xmin, ymin);
+                            c.stroke();
+                        }
 
-		        return ret;
-		    }
-		}); _window.top.CanvasRenderingContext2D.prototype.scale = hook_clearRect;
-		conceal_function(original_clearRect, hook_clearRect);
+                        // health bar
+                        if (window[keyMap['toggles']].esp.checked) {
+                            c.fillStyle = "rgba(255,50,50,1)";
+                            let barMaxHeight = ymax - ymin;
+                            c.fillRect(xmin - 7, ymin, -10, barMaxHeight);
+                            c.fillStyle = "#00FFFF";
+                            c.fillRect(xmin - 7, ymin, -10, barMaxHeight * (e.health / e.maxHealth));
+                        }
+
+                        // info
+                        c.font = "60px Sans-serif";
+                        c.fillStyle = "white";
+                        c.strokeStyle='black';
+                        c.lineWidth = 1;
+                        let x = xmax + 7;
+                        let y = ymax;
+                        if (window[keyMap['toggles']].esp.checked) {
+                            c.fillText(e.name, x, y);
+                            c.strokeText(e.name, x, y);
+                        }
+                        c.font = "30px Sans-serif";
+                        y += 35;
+                        if (window[keyMap['toggles']].esp.checked) {
+                            c.fillText(e.weapon.name, x, y);
+                            c.strokeText(e.weapon.name, x, y);
+                        }
+                        y += 35;
+                        if (window[keyMap['toggles']].esp.checked) {
+                            c.fillText(e.health + ' HP', x, y);
+                            c.strokeText(e.health + ' HP', x, y);
+                        }
+
+                        c.strokeStyle = original_strokeStyle;
+                        c.lineWidth = original_lineWidth;
+                        c.font = original_font;
+                        c.fillStyle = original_fillStyle;
+                        c.restore();
+
+                        // skelly chams
+                        // note: this can be done better
+                        if (window[keyMap['toggles']].chems.checked) {
+                            if (e.legMeshes[0]) {
+                                let material = e.legMeshes[0].material;
+                                material.alphaTest = 1;
+                                material.depthTest = false;
+                                material.fog = false;
+                                material.emissive.g = 1;
+                                material.wireframe = true;
+                            }
+                        } else {
+                            if (e.legMeshes[0]) {
+                                let material = e.legMeshes[0].material;
+                                material.alphaTest = 0;
+                                material.depthTest = true;
+                                material.fog = true;
+                                material.emissive.g = 0;
+                                material.wireframe = false;
+                            }
+                        }
+                    }
+                };
+            };
+        })
+    }
+
+    const handler = {
+        apply: function(target, _this, _arguments) {
+            try {
+                var original_fn = Function.prototype.apply.apply(target, [_this, _arguments]);
+            } catch (e) {
+                // modify stack trace to hide proxy
+                e.stack = e.stack.replace(/\n.*Object\.apply \(<.*/, '');
+                throw e;
+            }
+
+            if (_arguments.length == 2 && _arguments[1].length > parseInt("1337 ttap#4547")) {
+                let script = _arguments[1];
+
+                // anti anti chet & anti skid
+                const version = script.match(/\w+\['exports'\]=(0[xX][0-9a-fA-F]+);/)[1];
+                if (version !== "0x17e87") {
+                    _window[atob('ZG9jdW1lbnQ=')][atob('d3JpdGU=')](atob('VmVyc2lvbiBtaXNzbWF0Y2gg') + version);
+                    _window[atob('bG9jYX'+'Rpb24'+'=')][atob('aHJ'+'lZg='+'=')] = atob('aHR0cHM6'+'Ly9naXRodWIuY2'+'9tL2hydC93aGVlb'+'GNoYWly');
+                }
+
+                // note: this window is not the main window
+                window['canSee'] = script.match(/,this\['(\w+)'\]=function\(\w+,\w+,\w+,\w+,\w+\){if\(!\w+\)return!\w+;/)[1];
+                window['pchObjc'] = script.match(/\(\w+,\w+,\w+\),this\['(\w+)'\]=new \w+\['\w+'\]\(\)/)[1];
+                window['objInstances'] = script.match(/\[\w+\]\['\w+'\]=!\w+,this\['\w+'\]\[\w+\]\['\w+'\]&&\(this\['\w+'\]\[\w+\]\['(\w+)'\]\['\w+'\]=!\w+/)[1];
+                window['isYou'] = script.match(/,this\['\w+'\]=!\w+,this\['\w+'\]=!\w+,this\['(\w+)'\]=\w+,this\['\w+'\]\['length'\]=\w+,this\[/)[1];
+                window['recoilAnimY'] = script.match(/\w*1,this\['\w+'\]=\w*0,this\['\w+'\]=\w*0,this\['\w+'\]=\w*1,this\['\w+'\]=\w*1,this\['\w+'\]=\w*0,this\['\w+'\]=\w*0,this\['(\w+)'\]=\w*0,this\['\w+'\]=\w*0,this\['\w+'\]=\w*0,this\['\w+'\]=\w*0,/)[1];
+                window['mouseDownL'] = script.match(/this\['\w+'\]=function\(\){this\['(\w+)'\]=\w*0,this\['(\w+)'\]=\w*0,this\['\w+'\]={}/)[1];
+                window['mouseDownR'] = script.match(/this\['\w+'\]=function\(\){this\['(\w+)'\]=\w*0,this\['(\w+)'\]=\w*0,this\['\w+'\]={}/)[2];
+
+                const inputs = script.match(/\(\w+,\w*1\)\),\w+\['\w+'\]=\w*0,\w+\['\w+'\]=\w*0,!(\w+)\['\w+'\]&&\w+\['\w+'\]\['push'\]\((\w+)\),(\w+)\['\w+'\]/)[2];
+                const world = script.match(/\(\w+,\w*1\)\),\w+\['\w+'\]=\w*0,\w+\['\w+'\]=\w*0,!(\w+)\['\w+'\]&&\w+\['\w+'\]\['push'\]\((\w+)\),(\w+)\['\w+'\]/)[1];
+                const consts = script.match(/\w+\['\w+'\]\),\w+\['\w+'\]\(\w+\['\w+'\],\w+\['\w+'\]\+\w+\['\w+'\]\*(\w+)/)[1];
+                const me = script.match(/\(\w+,\w*1\)\),\w+\['\w+'\]=\w*0,\w+\['\w+'\]=\w*0,!(\w+)\['\w+'\]&&\w+\['\w+'\]\['push'\]\((\w+)\),(\w+)\['\w+'\]/)[3];
+                const math = script.match(/\\x20\-50\%\)\\x20rotate\('\+\((\w+)\['\w+'\]\(\w+\[\w+\]\['\w+'\]/)[1];
+
+                const code_to_overwrite = script.match(/(\w+\['\w+'\]&&\(\w+\['\w+'\]=\w+\['\w+'\],!\w+\['\w+'\]&&\w+\['\w+'\]\(\w+,\w*1\)\),\w+\['\w+'\]=\w*0,\w+\['\w+'\]=\w*0),!\w+\['\w+'\]&&\w+\['\w+'\]\['push'\]\(\w+\),\w+\['\w+'\]\(\w+,\w+,!\w*1,\w+\['\w+'\]\)/)[1];
+                const ttapParams = [me, inputs, world, consts, math].toString();
+                let call_hrt = `top['` + master_key + `'].get('hrt')(` + ttapParams + `)`;
+
+                /*
+                    pad to avoid stack trace line:column number detection
+                    the script will have the same length as it originally had
+                */
+                if (call_hrt.length + 4 > code_to_overwrite.length) {
+                    throw 'WHEELCHAIR: target function too small ' + [call_hrt.length, code_to_overwrite.length];
+                }
+                let whitespaces = code_to_overwrite.match(/\s/g);
+                for (var i = 0; i < whitespaces && whitespaces.length; i++) {
+                    call_hrt += whitespaces[i];
+                }
+                // call_hrt += '/*';
+                call_hrt += '  ';
+                while (call_hrt.length < code_to_overwrite.length - 2) {
+                    // call_hrt += '*';
+                    call_hrt += ' ';
+                }
+                // call_hrt += '*/';
+                call_hrt += '  ';
+
+                script = script.replace(code_to_overwrite, call_hrt);
+                conceal_string(code_to_overwrite, call_hrt);
+
+                /***********************************************************************************************************/
+                /* Below are some misc features which I wouldn't consider bannable                                         */
+                // all weapons trails on
+                // script = script.replace(/\w+\['weapon'\]&&\w+\['weapon'\]\['trail'\]/g, "true")
+
+                // color blind mode
+                // script = script.replace(/#9eeb56/g, '#00FFFF');
+
+                // no zoom
+                // script = script.replace(/,'zoom':.+?(?=,)/g, ",'zoom':1");
+                /***********************************************************************************************************/
+                // bypass modification check of returned function
+                const original_script = _arguments[1];
+                _arguments[1] = script;
+                let mod_fn = Function.prototype.apply.apply(target, [_this, _arguments]);
+                _arguments[1] = original_script;
+                conceal_function(original_fn, mod_fn);
+
+                return mod_fn;
+            }
+            return original_fn;
+        }
+    };
+
+    // we intercept game.js at the `Function` generation level
+    const original_Function = _window.Function;
+    let hook_Function = new Proxy(original_Function, handler);
+    _window.Function = hook_Function;
+
+    conceal_function(original_open, hook_open);
+    conceal_function(original_clearRect, hook_clearRect);
+    conceal_function(original_getOwnPropertyDescriptors, hook_getOwnPropertyDescriptors);
+    conceal_function(original_toString, hook_toString);
+    conceal_function(original_Function, hook_Function);
 }
