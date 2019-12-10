@@ -163,7 +163,7 @@ function cripple_window(_window) {
 		            switch (string) {
 		                case 'isYou': return entity[isYou];
 		                case 'objInstances': return entity[objInstances];
-		                case 'inView': return null == world[canSee](me, entity.x, entity.y - entity.crouchVal * consts.crouchDst, entity.z) ;//|| entity[cnBSeen];
+		                
 		                case 'isFriendly': return (me && me.team ? me.team : me.spectating ? 0x1 : 0x0) == entity.team;
 		                case 'recoilAnimY': return entity[recoilAnimY];
 		            }
