@@ -9,7 +9,7 @@
 // @require      https://code.jquery.com/ui/1.12.0/jquery-ui.min.js
 // @require      https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.0/jquery-confirm.min.js
 // @match        *://krunker.io/*
-// @updateUrl    https://raw.githubusercontent.com/Katistic/WheelChairGUI/master/hack.tampermonkey.js
+// @downloadURL    https://raw.githubusercontent.com/Katistic/WheelChairGUI/master/hack.tampermonkey.js
 // @run-at       document-start
 // @noframes
 // @grant        none
