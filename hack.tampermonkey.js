@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Krunker 1.9.2 Hack
 // @namespace    http://tampermonkey.net/
-// @version      2.0.1
+// @version      2.0.2
 // @description  Rip from a Krunker Hack Client by THEGUY3ds
 // @author       OVERHAX/THEGUY3ds + Hrt + ttap + Katistic
 // @icon         https://www.google.com/s2/favicons?domain=krunker.io
@@ -307,7 +307,7 @@ let render = function(c) {
     //aim assist
     const target = getTarget();
     if (target) {
-        if (controls[mouseDownR] == 1) {
+        if (controls[mouseDownR] == 1 || controls.keys[controls.aimKey] == 1) {
             camLookAt(target);
         }
     }
