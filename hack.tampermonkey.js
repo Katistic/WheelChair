@@ -2,9 +2,13 @@
 // @name         Krunker 1.9.2 Hack
 // @namespace    http://tampermonkey.net/
 // @version      1.9.2
-// @description  Rip from a Krunker Hack Client with no name on it
-// @author       Unknown
-// @match        https://krunker.io/*
+// @description  Rip from a Krunker Hack Client by THEGUY3ds
+// @author       OVERHAX/THEGUY3ds + Hrt + ttap + Katistic
+// @icon         https://www.google.com/s2/favicons?domain=krunker.io
+// @require      http://code.jquery.com/jquery-3.3.1.min.js
+// @require      https://code.jquery.com/ui/1.12.0/jquery-ui.min.js
+// @require      https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.0/jquery-confirm.min.js
+// @match        *://krunker.io/*
 // @grant        none
 // ==/UserScript==
 
@@ -346,14 +350,13 @@ let render = function() {
                         const mesh = object3d.children[j];
                         if (mesh && mesh.type == "Mesh") {
                             const material = mesh.material;
-                            material.depthTest = false;
-                            material.fog = false;
-                            material.emissive.r = 1;
-                            material.colorWrite = true;
-                            material.transparent = true;
-                            material.opacity = 1.0;
                             //material.needsUpdate = true;
                             //material.wireframe = !canHit(entity);
+                            material.alphaTest = 1;
+                            material.depthTest = false;
+                            material.fog = false;
+                            material.emissive.g = 1;
+                            material.wireframe = true;
                         }
                     }
                 }
