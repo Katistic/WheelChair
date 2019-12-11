@@ -1,3 +1,17 @@
+# Un-named Client Hack
+
+```diff
++ Works with krunker.io 1.9.2
+- Has no GUI as of now, please be patient
+```
+
+This hack was gathered from a compiled electron client, and changed
+to work with tampermonkey.
+
+To install, copy [this script](https://raw.githubusercontent.com/Katistic/WheelChairGUI/master/wheelchair.tampermonkey.js) into tampermonkey
+
+# WheelChair
+
 This repository follows and edits [hrt's wheelchair hack.](https://github.com/hrt/WheelChair)
 
 As such this repo will always be updated after his.
@@ -5,6 +19,7 @@ Please follow his repo for his amazing work!
 
 ```diff
 ! Outdated as of krunker.io version 1.9.1
+! Has GUI, still in progress
 ```
 
 
@@ -28,4 +43,3 @@ If you can figure out reliable ways to identify the presence of the extension ru
 ![Loading.png](https://raw.githubusercontent.com/katistic/wheelchairgui/master/pics/Loading.png)
 
 ![Menu.png](https://raw.githubusercontent.com/katistic/wheelchairgui/master/pics/Menu.png)
-
