@@ -8,7 +8,7 @@
 This hack was gathered from a compiled electron client, and changed
 to work with tampermonkey.
 
-To install, copy [this script](https://raw.githubusercontent.com/Katistic/WheelChairGUI/master/wheelchair.tampermonkey.js) into tampermonkey
+To install, copy [this script](https://raw.githubusercontent.com/Katistic/WheelChairGUI/master/hack.tampermonkey.js) into tampermonkey
 
 # WheelChair
 
