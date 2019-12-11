@@ -2,7 +2,7 @@
 
 ```diff
 + Works with krunker.io 1.9.2
-- Has no GUI as of now, please be patient
+- Has no menu as of now, please be patient
 ```
 
 This hack was gathered from a compiled electron client, and changed
@@ -19,7 +19,7 @@ Please follow his repo for his amazing work!
 
 ```diff
 ! Outdated as of krunker.io version 1.9.1
-! Has GUI, still in progress
+! Has menu, still in progress
 ```
 
 
