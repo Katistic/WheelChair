@@ -11,6 +11,7 @@
 // @match        *://krunker.io/*
 // @updateUrl    https://raw.githubusercontent.com/Katistic/WheelChairGUI/master/hack.tampermonkey.js
 // @run-at       document-start
+// @noframes
 // @grant        none
 // ==/UserScript==
 
