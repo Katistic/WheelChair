@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Krunker 1.9.2 Hack
 // @namespace    http://tampermonkey.net/
-// @version      1.9.2
+// @version      2.0.1
 // @description  Rip from a Krunker Hack Client by THEGUY3ds
 // @author       OVERHAX/THEGUY3ds + Hrt + ttap + Katistic
 // @icon         https://www.google.com/s2/favicons?domain=krunker.io
@@ -97,7 +97,7 @@ let hook_encode = new Proxy(original_encode, {
 }); TextEncoder.prototype.encode = hook_encode;
 conceal_function(original_encode, hook_encode);
 
-let render = function() {
+let render = function(c) {
 
     //DEFINES
     const args = arguments.callee.caller.caller.arguments;
@@ -141,9 +141,8 @@ let render = function() {
     let players = world.players.list;
     let entities = players.filter(x => { return x.active && !x[isYou] });
 
-
-     //FUNCTIONS
-     let getDistance3D = (fromX, fromY, fromZ, toX, toY, toZ) => {
+    //FUNCTIONS
+    let getDistance3D = (fromX, fromY, fromZ, toX, toY, toZ) => {
         var distX = fromX - toX,
             distY = fromY - toY,
             distZ = fromZ - toZ;
@@ -296,8 +295,8 @@ let render = function() {
 
     //ONTICK STUFF
 
-     // target update
-     if (defined(controls.target) && controls.target !== null) {
+    // target update
+    if (defined(controls.target) && controls.target !== null) {
         controls.object.rotation.y = controls.target.yD;
         controls[pchObjc].rotation.x = controls.target.xD;
         controls[pchObjc].rotation.x = Math.max(-Pi, Math.min(Pi, controls[pchObjc].rotation.x));
@@ -324,47 +323,37 @@ let render = function() {
             if (ammoLeft) players.endReload(me.weapon);
         }
     }
+
     //ESP / Chams
     entities.map((entity, index, array)=> {
         if (defined(entity[objInstances])) {
-/*
-            let isFriendly = get(entity, 'isFriendly');
-            let teamCol = isFriendly ? '#44AAFF' : '#FF4444';
 
-            let entityPos = entity[objInstances].position;
-            if (renderer.frustum.containsPoint(entityPos)) {
-                let entitynamePos = entityPos.clone().setY(entityPos.y + (consts.playerHeight + (0x0 <= entity.hatIndex ? consts.nameOffsetHat : 0) + consts.nameOffset - entity.crouchVal * consts.crouchDst));
-                let entityScrPosName = entitynamePos.clone();
-                let playerScaled = Math.max(0.3, 1 - camPos.distanceTo(entityScrPosName) / 600);
-                let entityScrPosBase = world2Screen(renderer.camera, entityPos);
-                let entityScrPosHead = world2Screen(renderer.camera, entityPos.setY(entityPos.y + consts.playerHeight - entity.crouchVal * consts.crouchDst));
-                let entityScrPxlDiff = pixelDifference(entityScrPosBase, entityScrPosHead, 0.6);
-                //2d
-                //rect(entityScrPosHead.x - entityScrPxlDiff[1] / 2, entityScrPosHead.y, 0, 0, entityScrPxlDiff[1], entityScrPxlDiff[0], teamCol, false);
+            //Chams
+            entity[cnBSeen] = true;
+            for (let i = 0; i < entity[objInstances].children.length; i++) {
+                const object3d = entity[objInstances].children[i];
+                for (let j = 0; j < object3d.children.length; j++) {
+                    const mesh = object3d.children[j];
+                    if (mesh && mesh.type == "Mesh") {
+                        const material = mesh.material;
+                        material.alphaTest = 1;
+                        material.depthTest = false;
+                        material.fog = false;
+                        material.emissive.g = 1;
+                        material.wireframe = true;
 
-                //Tracers
-                //line(fullWidth / 2, fullHeight - (fullHeight - scaledHeight), entityScrPosBase.x, entityScrPosBase.y, 2.5, teamCol);
-*/
-                //Chams
-                entity[cnBSeen] = true;
-                for (let i = 0; i < entity[objInstances].children.length; i++) {
-                    const object3d = entity[objInstances].children[i];
-                    for (let j = 0; j < object3d.children.length; j++) {
-                        const mesh = object3d.children[j];
-                        if (mesh && mesh.type == "Mesh") {
-                            const material = mesh.material;
-                            //material.needsUpdate = true;
-                            //material.wireframe = !canHit(entity);
-                            material.alphaTest = 1;
-                            material.depthTest = false;
-                            material.fog = false;
-                            material.emissive.g = 1;
-                            material.wireframe = true;
+                        if (entity.name.includes("  ||  ")) {
+                            let d2e = getDistance(me, entity).toString();
+                            entity.name = entity.ogname + "  ||  " + d2e.slice(0, d2e.indexOf(".")-1);
+                        } else {
+                            entity.ogname = entity.name
+                            let d2e = getDistance(me, entity).toString();
+                            entity.name = entity.ogname + "  ||  " + d2e.slice(0, d2e.indexOf(".")-1);
                         }
                     }
                 }
             }
-        //}
+        }
     });
 };
 const clearRect = CanvasRenderingContext2D.prototype.clearRect;
