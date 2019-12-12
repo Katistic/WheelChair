@@ -3,9 +3,9 @@
 This repository follows and edits [THEGUY3ds' krunkerplus hack.](https://github.com/THEGUY3ds/Krunkerplus-REWORKED-beta-test)
 
 ```diff
-+ Works with krunker.io 1.9.2
-+ Menu is up to date with hack features
-+ Tampermonkey script OR loader extension!
++ Works with krunker.io 1.9.2!
++ Menu is up to date with hack features!
++ Tampermonkey script!
 + Auto-updates!
 ```
 
@@ -15,13 +15,6 @@ to work with tampermonkey.
 ### Tampermonkey install
 
 To install, copy [this script](https://raw.githubusercontent.com/Katistic/WheelChairGUI/master/loader.new/chairloader.js) into tampermonkey
-
-### Extension install
-
-1. [Download loader.new.zip by clicking here](https://github.com/Katistic/WheelChairGUI/releases/download/v2.2.0/loader.new.zip)
-2. Navigate to chrome://extensions
-3. Enter developer mode (checkbox in the top right corner)
-4. Drag zip file into extensions page
 
 # WheelChair
 
