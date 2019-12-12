@@ -1,7 +1,7 @@
 {
   "name": "β",
-  "version": "2.1.0",
-  "manifest_version": 2,
+  "version": "2.1.2",
+  "manifest_version": 3,
   "description": "https://github.com/Katistic/WheelChairGUI",
   "content_scripts": [
   	{"matches":["*://krunker.io/*"],"run_at": "document_start","js": ["chairloader.js"],"all_frames":true,"match_about_blank":true}]
