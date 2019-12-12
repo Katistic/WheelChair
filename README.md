@@ -1,4 +1,4 @@
-# Un-named Client Hack (Tampermonkey Script)
+# KrunkerPlus Client Hack (Tampermonkey Script)
 
 ```diff
 + Works with krunker.io 1.9.2
