@@ -9,11 +9,39 @@
 // @require      https://code.jquery.com/ui/1.12.0/jquery-ui.min.js
 // @require      https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.0/jquery-confirm.min.js
 // @match        *://krunker.io/*
-// @downloadURL    https://raw.githubusercontent.com/Katistic/WheelChairGUI/master/hack.tampermonkey.js
+// @downloadURL  https://raw.githubusercontent.com/Katistic/WheelChairGUI/master/hack.tampermonkey.js
 // @run-at       document-start
 // @noframes
 // @grant        none
 // ==/UserScript==
+
+document.getElementById("instructions").style.color = "Blue";
+document.getElementById('instructions').innerHTML = "Hack by hrt + ttap + THEGUY3ds. Menu by Katistic.";
+
+// Full Screen -- https://github.com/THEGUY3ds/KRUNKERPLUS/blob/89e9bd9cae68ea8ac824551b33f2f13e852f9829/KrunkerPlusReworked.js#L46
+document.fullscreenEnabled = document.fullscreenEnabled || document.mozFullScreenEnabled || document.documentElement.webkitRequestFullScreen;
+
+function requestFullscreen(element) {
+	if (element.requestFullscreen) {
+		element.requestFullscreen();
+	} else if (element.mozRequestFullScreen) {
+		element.mozRequestFullScreen();
+	} else if (element.webkitRequestFullScreen) {
+		element.webkitRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT);
+	}
+}
+
+if (document.fullscreenEnabled) {
+	requestFullscreen(document.documentElement);
+}
+    function read(url) {
+    return new Promise(resolve => {
+        fetch(url).then(res => res.text()).then(res => {
+            return resolve(res);
+        });
+    });
+};
+// end
 
 let shared_state = new Map(Object.entries({functions_to_hide: new WeakMap(), strings_to_hide: [], hidden_globals: [], init: false}));
 
@@ -64,6 +92,19 @@ conceal_function(original_toString, hook_toString);
 var distance, cnBSeen, canSee, pchObjc, objInstances, isYou, recoilAnimY, mouseDownL, mouseDownR, inputs, getWorldPosition;
 console.json = object => console.log(JSON.stringify(object, undefined, 2));
 const defined = object => typeof object !== "undefined";
+
+const e = document.getElementById('mapInfoHolder').children[3];//.getElementsByTagName('div')[3];
+console.log(e)
+const n = document.createElement('form');
+n.setAttribute('style', 'width: 600px; height: 60px; line-height: 90%;')
+n.innerHTML = "<input type=\"checkbox\" name=\"aimbot\" value=\"true\" id=\"aimbot\" checked><label style=\"color: white; font-size: small;\" for=\"aimbot\"> AIMBOT (1) </label><input type=\"checkbox\" name=\"chems\" value=\"true\" id=\"chems\" checked><label style=\"color: white; font-size: small;\" for=\"chems\"> CHEMS (2) </label><input type=\"checkbox\" name=\"esp\" value=\"true\" id=\"esp\" checked><label style=\"color: white; font-size: small;\" for=\"esp\"> ESP (3) </label><br><label style=\"color: white; font-size: small;\"> Menu By Katistic -- Check out the repo <a href=\"https://github.com/Katistic/WheelChairGUI\" target=\"_blank\">HERE<a></label>"; // <input type=\"checkbox\" name=\"autoreload\" value=\"true\" id=\"autoreload\"><label style=\"color: white; font-size: small;\" for=\"autoreload\"> AUTORELOAD (2) </label>
+document.getElementById('mapInfoHolder').replaceChild(n, e);
+
+const toggles = {
+    aimbot: document.getElementById('aimbot'),
+    esp: document.getElementById('esp'),
+    chems: document.getElementById('chems'),
+};
 
 const original_encode = TextEncoder.prototype.encode;
 let hook_encode = new Proxy(original_encode, {
@@ -129,7 +170,7 @@ let render = function(c) {
         gmBig: '30px\x20Comic Sans',
         gmSmall: '20px\x20Comic Sans'
     }
-    console.dir(window)
+    //console.dir(window)
     let fullWidth = window.innerWidth;
     let fullHeight = window.innerHeight;
     let scaledWidth = canvas.width / scale;
@@ -293,6 +334,27 @@ let render = function(c) {
 
     let rgba2hex = (r,g,b,a = 255) => ("#").concat(byte2Hex(r),byte2Hex(g),byte2Hex(b),byte2Hex(a));
 
+    // Switches
+
+    if (controls.keys[49]) {
+        controls.keys[49] = 0
+        SOUND.play('tick_0',0.1)
+        toggles.aimbot.checked = !(toggles.aimbot.checked)
+    } else if (controls.keys[50]) {
+        controls.keys[50] = 0
+        SOUND.play('tick_0',0.1)
+        toggles.chems.checked = !(toggles.chems.checked)
+    } else if (controls.keys[51]) {
+        controls.keys[51] = 0
+        SOUND.play('tick_0',0.1)
+        toggles.esp.checked = !(toggles.esp.checked)
+        console.log(toggles.esp.checked)
+    } /*  else if (controls.keys[50]) {
+        controls.keys[50] = 0
+        SOUND.play('tick_0',0.1)
+        toggles.autoreload.checked = !(toggles.autoreload.checked)
+    }
+    */
     //ONTICK STUFF
 
     // target update
@@ -305,42 +367,61 @@ let render = function(c) {
     }  else controls.target = null;
 
     //aim assist
-    const target = getTarget();
-    if (target) {
-        if (controls[mouseDownR] == 1 || controls.keys[controls.aimKey] == 1) {
-            camLookAt(target);
+    if (toggles.aimbot.checked) {
+        const target = getTarget();
+        if (target) {
+            if (controls[mouseDownR] == 1 || controls.keys[controls.aimKey] == 1) {
+                camLookAt(target);
+            }
         }
-    }
-    else {
-        if (controls.target) camLookAt(null);
+        else {
+            if (controls.target) camLookAt(null);
+        }
     }
 
     //auto reload - they have crypted the me.ammos as well have to find this one
-    if (defined(me.ammos)) {
-        const ammoLeft = me.ammos[me.weaponIndex];
-        if (ammoLeft === 0) {
-            players.reload(me);
-            if (ammoLeft) players.endReload(me.weapon);
+    /*
+    if (toggles.autoreload.checked) {
+        if (defined(me.ammos)) {
+            const ammoLeft = me.ammos[me.weaponIndex];
+            if (ammoLeft === 0) {
+                players.reload(me);
+                if (ammoLeft) players.endReload(me.weapon);
+            }
         }
     }
+    */
 
     //ESP / Chams
     entities.map((entity, index, array)=> {
         if (defined(entity[objInstances])) {
 
             //Chams
-            entity[cnBSeen] = true;
+            if (toggles.esp.checked) {
+                entity[cnBSeen] = true;
+            } else {
+                entity[cnBSeen] = false;
+            }
             for (let i = 0; i < entity[objInstances].children.length; i++) {
                 const object3d = entity[objInstances].children[i];
                 for (let j = 0; j < object3d.children.length; j++) {
                     const mesh = object3d.children[j];
                     if (mesh && mesh.type == "Mesh") {
-                        const material = mesh.material;
-                        material.alphaTest = 1;
-                        material.depthTest = false;
-                        material.fog = false;
-                        material.emissive.g = 1;
-                        material.wireframe = true;
+                        if (toggles.chems.checked) {
+                            const material = mesh.material;
+                            material.alphaTest = 1;
+                            material.depthTest = false;
+                            material.fog = false;
+                            material.emissive.g = 1;
+                            material.wireframe = true;
+                        } else {
+                            const material = mesh.material;
+                            material.alphaTest = 0;
+                            material.depthTest = true;
+                            material.fog = true;
+                            material.emissive.g = 0;
+                            material.wireframe = false;
+                        }
 
                         if (entity.name.includes("  ||  ")) {
                             let d2e = getDistance(me, entity).toString();

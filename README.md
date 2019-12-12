@@ -2,7 +2,7 @@
 
 ```diff
 + Works with krunker.io 1.9.2
-- Has no menu as of now, please be patient
++ Menu is up to date with hack features
 ```
 
 This hack was gathered from a compiled electron client, and changed
