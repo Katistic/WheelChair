@@ -1,4 +1,6 @@
-# Un-named Client Hack (Tampermonkey Script)
+# KrunkerPlus Client Hack (Tampermonkey Script)
+
+This repository follows and edits [THEGUY3ds' krunkerplus hack.](https://github.com/THEGUY3ds/Krunkerplus-REWORKED-beta-test)
 
 ```diff
 + Works with krunker.io 1.9.2
