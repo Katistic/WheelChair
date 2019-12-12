@@ -15,6 +15,8 @@
 // @grant        none
 // ==/UserScript==
 
+alert("Click to load hack")
+
 try {
     document.getElementById("instructions").style.color = "Blue";
     document.getElementById('instructions').innerHTML = "Hack by hrt + ttap + THEGUY3ds. Menu by Katistic.";
