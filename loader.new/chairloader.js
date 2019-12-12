@@ -13,14 +13,16 @@
 // @grant        none
 // ==/UserScript==
 
-let r = new XMLHttpRequest();
-r.open('GET', 'https://raw.githubusercontent.com/Katistic/WheelChairGUI/master/hack.tampermonkey.js', false);
-r.send(null)
+document.addEventListener("DOMContentLoaded", function(event) {
+	let r = new XMLHttpRequest();
+	r.open('GET', 'https://raw.githubusercontent.com/Katistic/WheelChairGUI/master/hack.tampermonkey.js', false);
+	r.send(null);
 
-if (r.status != 200) {
-	console.error('Error GET hack: ' + r.status);
-}
+	if (r.status != 200) {
+		console.error('Error GET hack: ' + r.status);
+	}
 
-s = document.createElement('script')
-s.innerHTML = r.responseText
-document.body.appendChild(s)
+	s = document.createElement('script');
+	s.innerHTML = r.responseText;
+	document.body.appendChild(s);
+});
