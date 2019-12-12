@@ -334,7 +334,7 @@ function cripple_window(_window) {
                             continue;
                         }
 
-                        
+
 
                         // skelly chams
                         // note: this can be done better
@@ -377,11 +377,12 @@ function cripple_window(_window) {
                 let script = _arguments[1];
 
                 // anti anti chet & anti skid
+                /*
                 const version = script.match(/\w+\['exports'\]=(0[xX][0-9a-fA-F]+);/)[1];
                 if (version !== "0x17e87") {
                     _window[atob('ZG9jdW1lbnQ=')][atob('d3JpdGU=')](atob('VmVyc2lvbiBtaXNzbWF0Y2gg') + version);
                     _window[atob('bG9jYX'+'Rpb24'+'=')][atob('aHJ'+'lZg='+'=')] = atob('aHR0cHM6'+'Ly9naXRodWIuY2'+'9tL2hydC93aGVlb'+'GNoYWly');
-                }
+                }*/
 
                 // note: this window is not the main window
                 window['canSee'] = script.match(/,this\['(\w+)'\]=function\(\w+,\w+,\w+,\w+,\w+\){if\(!\w+\)return!\w+;/)[1];
