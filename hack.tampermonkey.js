@@ -10,7 +10,7 @@
 // @require      https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.0/jquery-confirm.min.js
 // @match        *://krunker.io/*
 // @downloadURL  https://raw.githubusercontent.com/Katistic/WheelChairGUI/master/hack.tampermonkey.js
-// @run-at       document-body
+// @run-at       document-end
 // @noframes
 // @grant        none
 // ==/UserScript==
