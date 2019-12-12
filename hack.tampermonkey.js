@@ -10,12 +10,10 @@
 // @require      https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.0/jquery-confirm.min.js
 // @match        *://krunker.io/*
 // @downloadURL  https://raw.githubusercontent.com/Katistic/WheelChairGUI/master/hack.tampermonkey.js
-// @run-at       document-start
+// @run-at       document-body
 // @noframes
 // @grant        none
 // ==/UserScript==
-
-alert("Click to load hack")
 
 try {
     document.getElementById("instructions").style.color = "Blue";
@@ -23,6 +21,7 @@ try {
 } catch {
     location.reload(true)
 }
+
 // Full Screen -- https://github.com/THEGUY3ds/KRUNKERPLUS/blob/89e9bd9cae68ea8ac824551b33f2f13e852f9829/KrunkerPlusReworked.js#L46
 document.fullscreenEnabled = document.fullscreenEnabled || document.mozFullScreenEnabled || document.documentElement.webkitRequestFullScreen;
 
