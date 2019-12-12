@@ -15,9 +15,12 @@
 // @grant        none
 // ==/UserScript==
 
-document.getElementById("instructions").style.color = "Blue";
-document.getElementById('instructions').innerHTML = "Hack by hrt + ttap + THEGUY3ds. Menu by Katistic.";
-
+try {
+    document.getElementById("instructions").style.color = "Blue";
+    document.getElementById('instructions').innerHTML = "Hack by hrt + ttap + THEGUY3ds. Menu by Katistic.";
+} catch {
+    location.reload(true)
+}
 // Full Screen -- https://github.com/THEGUY3ds/KRUNKERPLUS/blob/89e9bd9cae68ea8ac824551b33f2f13e852f9829/KrunkerPlusReworked.js#L46
 document.fullscreenEnabled = document.fullscreenEnabled || document.mozFullScreenEnabled || document.documentElement.webkitRequestFullScreen;
 
