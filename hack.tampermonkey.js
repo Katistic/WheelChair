@@ -104,6 +104,10 @@ n.setAttribute('style', 'width: 600px; height: 60px; line-height: 90%;')
 n.innerHTML = "<input type=\"checkbox\" name=\"aimbot\" value=\"true\" id=\"aimbot\" checked><label style=\"color: white; font-size: small;\" for=\"aimbot\"> AIMBOT (1) </label><input type=\"checkbox\" name=\"chems\" value=\"true\" id=\"chems\" checked><label style=\"color: white; font-size: small;\" for=\"chems\"> CHEMS (2) </label><input type=\"checkbox\" name=\"esp\" value=\"true\" id=\"esp\" checked><label style=\"color: white; font-size: small;\" for=\"esp\"> ESP (3) </label><br><label style=\"color: white; font-size: small;\"> Menu By Katistic -- Check out the repo <a href=\"https://github.com/Katistic/WheelChairGUI\" target=\"_blank\">HERE<a></label>"; // <input type=\"checkbox\" name=\"autoreload\" value=\"true\" id=\"autoreload\"><label style=\"color: white; font-size: small;\" for=\"autoreload\"> AUTORELOAD (2) </label>
 document.getElementById('mapInfoHolder').replaceChild(n, e);
 
+// Displace the trash
+const trash = document.getElementById("aHolder")
+trash.setAttribute('style', "position: absolute; bottom:5000px")
+
 const toggles = {
     aimbot: document.getElementById('aimbot'),
     esp: document.getElementById('esp'),
@@ -250,9 +254,6 @@ let render = function(c) {
         let recoil = (get(me, "recoilAnimY") * consts.recoilMlt) * 25;
         let xdir = getXDir(controls.object.position.x, controls.object.position.y, controls.object.position.z, target.x, (target.y + offset1), target.z) - ((recoil / 100) * 4);
         let ydir = getDirection(controls.object.position.z, controls.object.position.x, target.z, target.x);
-
-        if (me.weapon.name != "Sniper Rifle") {xdir = (xdir - .007)}
-
         controls.target = {
             xD:xdir,
             yD: ydir,
