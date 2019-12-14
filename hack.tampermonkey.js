@@ -340,6 +340,17 @@ let render = function(c) {
         return String(chars.substr((n >> 4) & 0x0F,1)) + chars.substr(n & 0x0F,1);
     }
 
+    // Get ammos
+    // So far only know weaponIndex
+    let ammos = () => {
+        var weaponIndex = 0
+        if (me.weapon.melee) {
+            weaponIndex = -1
+        } else {
+            weaponIndex = me.weapon.type
+        }
+    }
+
     let rgba2hex = (r,g,b,a = 255) => ("#").concat(byte2Hex(r),byte2Hex(g),byte2Hex(b),byte2Hex(a));
 
     // Switches
