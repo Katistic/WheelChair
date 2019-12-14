@@ -248,8 +248,11 @@ let render = function(c) {
         let offset1 = ((consts.playerHeight - consts.cameraHeight) - (target.crouchVal * consts.crouchDst));
         let offset2 = consts.playerHeight - consts.headScale / 2 - target.crouchVal * consts.crouchDst;
         let recoil = (get(me, "recoilAnimY") * consts.recoilMlt) * 25;
-        let xdir = getXDir(controls.object.position.x, controls.object.position.y, controls.object.position.z, target.x, (target.y + offset1) - recoil, target.z);
+        let xdir = getXDir(controls.object.position.x, controls.object.position.y, controls.object.position.z, target.x, (target.y + offset1), target.z);
         let ydir = getDirection(controls.object.position.z, controls.object.position.x, target.z, target.x);
+
+        if (me.weapon.name != "Sniper Rifle") {xdir = (xdir - .007) - ((recoil / 100) * 4)}
+
         controls.target = {
             xD:xdir,
             yD: ydir,
