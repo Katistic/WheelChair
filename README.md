@@ -59,3 +59,9 @@ This repository follows and edits [THEGUY3ds' krunkerplus hack.](https://github.
 ### Tampermonkey install
 
 To install, copy [this script](https://raw.githubusercontent.com/Katistic/WheelChairGUI/master/loader.new/chairloader.js) into tampermonkey
+
+### Example pictures
+
+![Loading.png](https://raw.githubusercontent.com/katistic/wheelchairgui/master/pics/KrunkerPlus.Loading.png)
+
+![Menu.png](https://raw.githubusercontent.com/katistic/wheelchairgui/master/pics/KrunkerPlus.Menu.png)
