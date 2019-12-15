@@ -387,7 +387,6 @@ function cripple_window(_window) {
                         xmax = (xmax + 1) / 2;
                         ymax = (ymax + 1) / 2;
 
-
                         // save and restore these variables later so they got nothing on us
                         const original_strokeStyle = c.strokeStyle;
                         const original_lineWidth = c.lineWidth;
@@ -460,7 +459,8 @@ function cripple_window(_window) {
                         // skelly chams
                         // note: this can be done better
                         if (window[keyMap['toggles']].chems.checked) {
-                            if (e.legMeshes[0]) {
+                            if (e[legMeshes][0]) {
+                                _window.top.console.log("There")
                                 let material = e[legMeshes][0].material;
                                 material.alphaTest = 1;
                                 material.depthTest = false;
@@ -469,7 +469,7 @@ function cripple_window(_window) {
                                 material.wireframe = true;
                             }
                         } else {
-                            if (e.legMeshes[0]) {
+                            if (e[legMeshes][0]) {
                                 let material = e[legMeshes][0].material;
                                 material.alphaTest = 0;
                                 material.depthTest = true;
