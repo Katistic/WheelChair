@@ -24,20 +24,22 @@ As such this repo will always be updated after his.
 Please follow his repo for his amazing work!
 
 ```diff
-! Outdated as of krunker.io version 1.9.1
++ Works with krunker.io 1.9.2!
++ Auto-updates!
++ Extension loader!
 ! Has menu, still in progress
+- Can be quite laggy
+- Can be buggy
 ```
 
 
-# ♿ 1.9.2 wheelchair
+## ♿ 1.9.2 wheelchair
 Become a cripple, use a wheelchair...
 
 ### Chromium Extension
 Updated for 1.9.2, reinstall the extension.
 
-
-
-1. [Download this (click here)](https://github.com/Katistic/WheelChairGUI/releases/download/v2.2.0/loader.zip)
+1. [Download this (click here)](https://github.com/Katistic/WheelChairGUI/releases/download/v2.2.0/wheelchair.loader.zip)
 2. Navigate to chrome://extensions
 3. Enable developer mode (probably a checkbox in the top right)
 4. Drag the downloaded file into the extensions page (you do not need to extract)

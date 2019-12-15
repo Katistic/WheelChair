@@ -299,6 +299,12 @@ function cripple_window(_window) {
 
                 _window.top.document.getElementById('mapInfoHolder').replaceChild(n, e);
 
+                // Displace Trash
+                if (_window.top.document.getElementById("aHolder")) {
+                    const trash = _window.top.document.getElementById("aHolder")
+                    trash.setAttribute('style', "position: absolute; bottom:5000px")
+                }
+
                 keyMap['toggles'] = genKey();
                 const toggles = {
                     aimbot: _window.top.document.getElementById('aimbot'),

@@ -78,8 +78,8 @@
         } else {
             hook = new Proxy(original, {
                 apply: function(target, _this, _arguments) {
-                    _this = shared_state.get('functions_to_hide').get(_this) || _this;    
-                    target = shared_state.get('functions_to_hide').get(target) || target;    
+                    _this = shared_state.get('functions_to_hide').get(_this) || _this;
+                    target = shared_state.get('functions_to_hide').get(target) || target;
                     replace_enumerables(_arguments, new _window.Array());
 
                     try {
