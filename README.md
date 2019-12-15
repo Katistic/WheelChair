@@ -1,22 +1,5 @@
-# KrunkerPlus Client Hack
-
-This repository follows and edits [THEGUY3ds' krunkerplus hack.](https://github.com/THEGUY3ds/Krunkerplus-REWORKED-beta-test)
-
-```diff
-+ Works with krunker.io 1.9.2!
-+ Menu is up to date with hack features!
-+ Tampermonkey script!
-+ Auto-updates!
-```
-
-This hack was gathered from a compiled electron client, and changed
-to work with tampermonkey.
-
-### Tampermonkey install
-
-To install, copy [this script](https://raw.githubusercontent.com/Katistic/WheelChairGUI/master/loader.new/chairloader.js) into tampermonkey
-
-# WheelChair
+# ♿ 1.9.2 wheelchair
+Become a cripple, use a wheelchair...
 
 This repository follows and edits [hrt's wheelchair hack.](https://github.com/hrt/WheelChair)
 
@@ -27,14 +10,19 @@ Please follow his repo for his amazing work!
 + Works with krunker.io 1.9.2!
 + Auto-updates!
 + Extension loader!
++ Has a wide set of features
 ! Has menu, still in progress
 - Can be quite laggy
 - Can be buggy
 ```
 
-
-## ♿ 1.9.2 wheelchair
-Become a cripple, use a wheelchair...
+### Wheelchair Menu Features
+- Aimbot (With attached triggerbot)
+- Auto-reload
+- Bhops
+- Chams
+- ESP
+- Safe Sniper Aimbot (Disable aimbot after 1 shot of rifle)
 
 ### Chromium Extension
 Updated for 1.9.2, reinstall the extension.
@@ -49,3 +37,25 @@ Updated for 1.9.2, reinstall the extension.
 ![Loading.png](https://raw.githubusercontent.com/katistic/wheelchairgui/master/pics/Loading.png)
 
 ![Menu.png](https://raw.githubusercontent.com/katistic/wheelchairgui/master/pics/Menu.png)
+
+
+# 1.9.2 KrunkerPlus
+
+This repository follows and edits [THEGUY3ds' krunkerplus hack.](https://github.com/THEGUY3ds/Krunkerplus-REWORKED-beta-test)
+
+```diff
++ Works with krunker.io 1.9.2!
++ Menu is up to date with hack features!
++ Tampermonkey script!
++ Auto-updates!
+- Minimal features
+```
+
+### KrunkerPlus Menu Features
+- Aim-in Aimbot (Without triggerbot)
+- Chams
+- ESP
+
+### Tampermonkey install
+
+To install, copy [this script](https://raw.githubusercontent.com/Katistic/WheelChairGUI/master/loader.new/chairloader.js) into tampermonkey
