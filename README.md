@@ -29,20 +29,18 @@ Please follow his repo for his amazing work!
 ```
 
 
-## ♿ 1.9.0 wheelchair
+# ♿ 1.9.2 wheelchair
 Become a cripple, use a wheelchair...
 
 ### Chromium Extension
-Remove all exisiting scripts.
+Updated for 1.9.2, reinstall the extension.
 
-Make sure you are logged out before trying to use!
 
-1. Navigate to chrome://extensions
-2. Enable developer mode (probably a checkbox in the top right)
-3. [Download this unpacked extension (click here)](https://github.com/Katistic/WheelChairGUI/releases/download/v2.1.0/loader.zip)
-4. Drag the downloaded file into the extensions page ( you do not need to extract )
 
-If you can figure out reliable ways to identify the presence of the extension running then I am interested to know how.
+1. [Download this (click here)](https://github.com/Katistic/WheelChairGUI/releases/download/v2.2.0/loader.zip)
+2. Navigate to chrome://extensions
+3. Enable developer mode (probably a checkbox in the top right)
+4. Drag the downloaded file into the extensions page (you do not need to extract)
 
 ### Example pictures
 
