@@ -22,7 +22,7 @@ try {
 			}
 
 			let patch_req = new XMLHttpRequest();
-			patch_req.open('GET', 'https://raw.githubusercontent.com/hrt/WheelChair/master/patch_world.min.js', false);
+			patch_req.open('GET', 'https://raw.githubusercontent.com/Katistic/WheelChair/master/patch_world.min.js', false);
 			patch_req.send(null);
 			if (patch_req.status != 200) {
 				console.error('Error GET patch_world: ' + patch_req.status);
