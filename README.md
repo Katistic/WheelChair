@@ -1,4 +1,4 @@
-# ♿ 1.9.2 wheelchair
+# ♿ 1.9.2 wheelchair (Outdated as of 1.9.3)
 Become a cripple, use a wheelchair...
 
 This repository follows and edits [hrt's wheelchair hack.](https://github.com/hrt/WheelChair)
@@ -7,13 +7,13 @@ As such this repo will always be updated after his.
 Please follow his repo for his amazing work!
 
 ```diff
-+ Works with krunker.io 1.9.2!
 + Auto-updates!
 + Extension loader!
 + Has a wide set of features
 ! Has menu, still in progress
 - Can be quite laggy
 - Can be buggy
+- Outdated as of 1.9.3
 ```
 
 ### Wheelchair Menu Features
@@ -39,16 +39,16 @@ Updated for 1.9.2, reinstall the extension.
 ![Menu.png](https://raw.githubusercontent.com/katistic/wheelchairgui/master/pics/Menu.png)
 
 
-# 1.9.2 KrunkerPlus
+# 1.9.2 KrunkerPlus (Outdated as of 1.9.3)
 
 This repository follows and edits [THEGUY3ds' krunkerplus hack.](https://github.com/THEGUY3ds/Krunkerplus-REWORKED-beta-test)
 
 ```diff
-+ Works with krunker.io 1.9.2!
 + Menu is up to date with hack features!
 + Tampermonkey script!
 + Auto-updates!
 - Minimal features
+- Outdated as of 1.9.3
 ```
 
 ### KrunkerPlus Menu Features
