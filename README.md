@@ -1,3 +1,35 @@
+# 1.9.3 KrunkerPlus
+
+This repository follows and edits [THEGUY3ds' krunkerplus hack.](https://github.com/THEGUY3ds/Krunkerplus-REWORKED-beta-test)
+
+```diff
++ Works with 1.9.3
++ Menu is up to date with hack features!
++ Tampermonkey script!
++ Auto-updates!
+- Minimal features
+```
+
+### KrunkerPlus Menu Features
+- Aim-in Aimbot (Without triggerbot)
+- Chams
+- ESP
+
+### Tampermonkey install
+
+To install, copy [this script](https://raw.githubusercontent.com/Katistic/WheelChairGUI/master/krunkerplus.tampermonkey.loader.js) into tampermonkey
+
+### Known bugs
+
+- Name ESP doesn't work 100%
+- Hack sometimes doesn't work
+
+### Example pictures
+
+![Loading.png](https://raw.githubusercontent.com/katistic/wheelchairgui/master/pics/KrunkerPlus.Loading.png)
+
+![Menu.png](https://raw.githubusercontent.com/katistic/wheelchairgui/master/pics/KrunkerPlus.Menu.png)
+
 # ♿ 1.9.2 wheelchair (Outdated as of 1.9.3)
 Become a cripple, use a wheelchair...
 
@@ -37,31 +69,3 @@ Updated for 1.9.2, reinstall the extension.
 ![Loading.png](https://raw.githubusercontent.com/katistic/wheelchairgui/master/pics/Loading.png)
 
 ![Menu.png](https://raw.githubusercontent.com/katistic/wheelchairgui/master/pics/Menu.png)
-
-
-# 1.9.2 KrunkerPlus (Outdated as of 1.9.3)
-
-This repository follows and edits [THEGUY3ds' krunkerplus hack.](https://github.com/THEGUY3ds/Krunkerplus-REWORKED-beta-test)
-
-```diff
-+ Menu is up to date with hack features!
-+ Tampermonkey script!
-+ Auto-updates!
-- Minimal features
-- Outdated as of 1.9.3
-```
-
-### KrunkerPlus Menu Features
-- Aim-in Aimbot (Without triggerbot)
-- Chams
-- ESP
-
-### Tampermonkey install
-
-To install, copy [this script](https://raw.githubusercontent.com/Katistic/WheelChairGUI/master/krunkerplus.tampermonkey.loader.js) into tampermonkey
-
-### Example pictures
-
-![Loading.png](https://raw.githubusercontent.com/katistic/wheelchairgui/master/pics/KrunkerPlus.Loading.png)
-
-![Menu.png](https://raw.githubusercontent.com/katistic/wheelchairgui/master/pics/KrunkerPlus.Menu.png)
