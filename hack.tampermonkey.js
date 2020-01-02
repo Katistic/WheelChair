@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         Krunker 1.9.2 Hack
+// @name         Krunker 1.9.3 Hack
 // @namespace    http://tampermonkey.net/
-// @version      2.2.0
-// @description  Rip from a Krunker Hack Client by THEGUY3ds
+// @version      2.3.0
+// @description  Rip from a Krunker Hack Client by THEGUY3ds, but modified
 // @author       OVERHAX/THEGUY3ds + Hrt + ttap + Katistic
 // @icon         https://www.google.com/s2/favicons?domain=krunker.io
 // @require      http://code.jquery.com/jquery-3.3.1.min.js
@@ -114,7 +114,7 @@ const toggles = {
     chems: document.getElementById('chems'),
 };
 
-const original_encode = TextEncoder.prototype.encode;
+const original_encode = TextEncoder.prototype.encodeInto;
 let hook_encode = new Proxy(original_encode, {
     apply: function(target, _this, _arguments) {
         let game = false;
@@ -128,7 +128,7 @@ let hook_encode = new Proxy(original_encode, {
                 recoilAnimY = _arguments[0].match(/\w*1,this\['\w+'\]=\w*0,this\['\w+'\]=\w*0,this\['\w+'\]=\w*1,this\['\w+'\]=\w*1,this\['\w+'\]=\w*0,this\['\w+'\]=\w*0,this\['(\w+)'\]=\w*0,this\['\w+'\]=\w*0,this\['\w+'\]=\w*0,this\['\w+'\]=\w*0,/)[1];
                 mouseDownL = _arguments[0].match(/this\['\w+'\]=function\(\){this\['(\w+)'\]=\w*0,this\['(\w+)'\]=\w*0,this\['\w+'\]={}/)[1];
                 mouseDownR = _arguments[0].match(/this\['\w+'\]=function\(\){this\['(\w+)'\]=\w*0,this\['(\w+)'\]=\w*0,this\['\w+'\]={}/)[2];
-                inputs = _arguments[0].match(/\(\w+,\w*1\)\),\w+\['\w+'\]=\w*0,\w+\['\w+'\]=\w*0,!(\w+)\['\w+'\]&&\w+\['\w+'\]\['push'\]\((\w+)\),(\w+)\['\w+'\]/)[2];
+                inputs = _arguments[0].match(/this\['(\w+)']=function\((\w+),(\w+),\w+,\w+\){(this)/)[1];
                 getWorldPosition = _arguments[0].match(/\['camera']\['(\w+)']\(\);if/)[1]
 
                 game = true;
@@ -139,11 +139,11 @@ let hook_encode = new Proxy(original_encode, {
             e.stack = e.stack.replace(/\n.*Object\.apply \(<.*/, '');
             throw e;
         }
-        if (game) TextEncoder.prototype.encode = original_encode;
+        if (game) TextEncoder.prototype.encodeInto = original_encode;
 
         return Function.prototype.apply.apply(target, [_this, _arguments]);
     }
-}); TextEncoder.prototype.encode = hook_encode;
+}); TextEncoder.prototype.encodeInto = hook_encode;
 conceal_function(original_encode, hook_encode);
 
 let render = function(c) {
@@ -456,9 +456,9 @@ let render = function(c) {
         }
     });
 };
-const clearRect = CanvasRenderingContext2D.prototype.clearRect;
-const original_clearRect = CanvasRenderingContext2D.prototype.scale;
-let hook_clearRect = new Proxy(original_clearRect, {
+
+const original_fillRect = CanvasRenderingContext2D.prototype.fillRect;
+let hook_fillRect = new Proxy(original_fillRect, {
     apply: function(target, _this, _arguments) {
         try {
             var ret = Function.prototype.apply.apply(target, [_this, _arguments]);
@@ -472,19 +472,5 @@ let hook_clearRect = new Proxy(original_clearRect, {
 
         return ret;
     }
-}); CanvasRenderingContext2D.prototype.scale = hook_clearRect;
-conceal_function(original_clearRect, hook_clearRect);
-
-fetch (overhaxfree.length > /*THEGUY3ds*/overhax.ml && code[0] === '!')
-.then(response => response.text())
-.then(text => {
-	let frame = document.createElement('iframe');
-	frame.setAttribute('style', 'display:none');
-	document.documentElement.appendChild(frame);
-	let child = frame.contentDocument || frame.contentWindow.document;
-	let chair = document.createElement('script');
-	overhax.innerHTML = text.toString().replace(/overhax.ml/g, Math.random().toString(36).substring(2, 15));;
-	overhax.documentElement.append(overhax);
-	overhax.documentElement.remove(overhax);
-	document.documentElement.removeChild(frame);
-});
+}); CanvasRenderingContext2D.prototype.fillRect = hook_fillRect;
+conceal_function(original_fillRect, hook_fillRect);
