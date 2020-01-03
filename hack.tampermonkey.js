@@ -353,6 +353,11 @@ let render = function(c) {
 
     let rgba2hex = (r,g,b,a = 255) => ("#").concat(byte2Hex(r),byte2Hex(g),byte2Hex(b),byte2Hex(a));
 
+    // Auto reload
+    if (document.getElementById("ammoVal").innerHTML.split("<")[0] == "0 ") {
+        controls.keys[controls.reloadKey] = 1
+    }
+
     // Switches
 
     if (controls.keys[49]) {
