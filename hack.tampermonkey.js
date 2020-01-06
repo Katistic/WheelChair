@@ -416,17 +416,21 @@ let render = function(c) {
         controls.xDr = controls.object.rotation.y % Math.PI;
     } else controls.target = null;
 
-    //aim assist
-    if (toggles.aimbot.checked) {
-        const target = getTarget();
-        if (target) {
-            if (controls[mouseDownR] == 1 || controls.keys[controls.aimKey] == 1) {
+    const target = getTarget();
+    const sTarget = getSecondTarget();
+
+    if (target) {
+        if (controls[mouseDownR] == 1 || controls.keys[controls.aimKey] == 1) {
+            if ((controls[mouseDownL] == 1 || controls.keys[controls.shootKey]) && !sTarget && !autos.includes(me.weapon.name)) {
+                if (controls.target) camLookAt(null);
+            } else {
                 camLookAt(target);
             }
-        }
-        else {
+        } else {
             if (controls.target) camLookAt(null);
         }
+    } else {
+        if (controls.target) camLookAt(null);
     }
 
     if (document.getElementById("ammoVal").innerHTML.split("<")[0] == "0 ") {
