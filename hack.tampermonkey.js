@@ -291,6 +291,26 @@ let render = function(c) {
         return null;
     }
 
+    let getSecondTarget = () => {
+        if (!defined (distance)) distance = Infinity;
+        let skip = true;
+        for (const entity of players.filter(x => { return x.active && !get(x,"isYou") && get(x,"inView") && !get(x,"isFriendly") && x.health > 0})) {
+            if (defined(entity[objInstances])) {
+                const entityPos = entity[objInstances].position;
+                if (skip) {skip = false; continue;}
+                if (renderer.frustum.containsPoint(entityPos)) {
+                    const dist = entityPos.distanceTo(me);
+                    if (dist <= distance) {
+                        me.distance = dist;
+                        return entity;
+                    }
+                }
+            }
+        }
+        distance = Infinity;
+        return null;
+    }
+
     let camLookAt = (target) => {
         if (!defined(controls) || target === null || (target.x + target.y + target.z2) == 0) return void(controls.target = null);
 
@@ -409,16 +429,8 @@ let render = function(c) {
         }
     }
 
-    //auto reload - they have crypted the me.ammos as well have to find this one
-    /*
-    if (toggles.autoreload.checked) {
-        if (defined(me.ammos)) {
-            const ammoLeft = me.ammos[me.weaponIndex];
-            if (ammoLeft === 0) {
-                players.reload(me);
-                if (ammoLeft) players.endReload(me.weapon);
-            }
-        }
+    if (document.getElementById("ammoVal").innerHTML.split("<")[0] == "0 ") {
+        controls.keys[controls.reloadKey] = 1
     }
 
     //ESP / Chams
