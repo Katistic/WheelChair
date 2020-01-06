@@ -458,11 +458,11 @@ let render = function(c) {
 
                         if (entity.name.includes("  ||  ")) {
                             let d2e = getDistance(me, entity).toString();
-                            entity.name = entity.ogname + "  ||  " + d2e.slice(0, d2e.indexOf(".")-1);
+                            entity.name = entity.ogname + " Distance   ||  " + d2e.slice(0, d2e.indexOf(".") - 1);
                         } else {
                             entity.ogname = entity.name
                             let d2e = getDistance(me, entity).toString();
-                            entity.name = entity.ogname + "  ||  " + d2e.slice(0, d2e.indexOf(".")-1);
+                            entity.name = entity.ogname + " Distance  ||  " + d2e.slice(0, d2e.indexOf(".") - 1);
                         }
                     };
                 };
