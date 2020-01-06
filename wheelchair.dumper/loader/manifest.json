@@ -2,7 +2,7 @@
   "name": "~♿",
   "version": "2.0.0",
   "manifest_version": 2,
-  "description": "https://github.com/hrt/wheelchair",
+  "description": "https://github.com/Katistic/WheelChairGUI/tree/Wheelchair-Experiments",
   "web_accessible_resources": ["wheelchair.js", "patch_world.js"],
   "content_scripts": [
   	{"matches":["*://krunker.io/*"],"run_at": "document_start","js": ["chairloader.js"],"all_frames":true,"match_about_blank":true}]

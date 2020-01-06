@@ -15,14 +15,14 @@ try {
 			// must be synchronous to force execution before other scripts
 			// note: we fetch the same code for each iframe
 			let chair_req = new XMLHttpRequest();
-			chair_req.open('GET', 'https://raw.githubusercontent.com/hrt/WheelChair/master/wheelchair.min.js', false);
+			chair_req.open('GET', 'https://raw.githubusercontent.com/Katistic/WheelChairGUI/Wheelchair-Experiments/wheelchair.dumper/wheelchair.js', false);
 			chair_req.send(null);
 			if (chair_req.status != 200) {
 				console.error('Error GET wheelchair: ' + chair_req.status);
 			}
 
 			let patch_req = new XMLHttpRequest();
-			patch_req.open('GET', 'https://raw.githubusercontent.com/hrt/WheelChair/master/patch_world.min.js', false);
+			patch_req.open('GET', 'https://raw.githubusercontent.com/Katistic/WheelChairGUI/Wheelchair-Experiments/wheelchair.dumper/patch_world.js', false);
 			patch_req.send(null);
 			if (patch_req.status != 200) {
 				console.error('Error GET patch_world: ' + patch_req.status);
