@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         Krunker 1.9.3 Hack
+// @name         Krunker 1.9.5 Hack
 // @namespace    http://tampermonkey.net/
 // @version      2.3.0
 // @description  Rip from a Krunker Hack Client by THEGUY3ds, but modified
@@ -17,13 +17,14 @@
 
 try {
     document.getElementById("instructions").style.color = "Blue";
-    document.getElementById('instructions').innerHTML = "Hack by hrt + ttap + THEGUY3ds. Menu by Katistic.";
+    document.getElementById('instructions').innerHTML = "Hack by hrt + ttap + THEGUY3ds + Katistic.";
 } catch {
     location.reload(true)
 }
 
 // Full Screen -- https://github.com/THEGUY3ds/KRUNKERPLUS/blob/89e9bd9cae68ea8ac824551b33f2f13e852f9829/KrunkerPlusReworked.js#L46
 document.fullscreenEnabled = document.fullscreenEnabled || document.mozFullScreenEnabled || document.documentElement.webkitRequestFullScreen;
+aimedLastFrame = false;
 
 function requestFullscreen(element) {
 	if (element.requestFullscreen) {
@@ -47,6 +48,17 @@ if (document.fullscreenEnabled) {
 };
 // end
 
+function read(url) {
+    return new Promise(resolve => {
+        fetch(url).then(res => res.text()).then(res => {
+            return resolve(res);
+        });
+    });
+};
+
+// Aimdot
+document.getElementById('aimRecticle').innerHTML = '<img id="recticleImg" src="https://i.redd.it/aa069tp99wh31.png">';
+
 let shared_state = new Map(Object.entries({functions_to_hide: new WeakMap(), strings_to_hide: [], hidden_globals: [], init: false}));
 
 let invisible_define = function(obj, key, value) {
@@ -64,7 +76,10 @@ let conceal_function = function(original_Function, hook_Function) {
 };
 
 let conceal_string = function(original_string, hook_string) {
-    shared_state.get('strings_to_hide').push({from: new RegExp(hook_string.replace(/([\[|\]|\(|\)|\*|\\|\.|\+])/g,'\\$1'), 'g'), to: original_string});
+    shared_state.get('strings_to_hide').push({
+        from: new RegExp(hook_string.replace(/([\[|\]|\(|\)|\*|\\|\.|\+])/g, '\\$1'), 'g'),
+        to: original_string
+    });
 };
 
 const original_toString = Function.prototype.toString;
@@ -93,16 +108,18 @@ Function.prototype.toString = hook_toString;
 conceal_function(original_toString, hook_toString);
 //
 
-var distance, cnBSeen, canSee, pchObjc, objInstances, isYou, recoilAnimY, mouseDownL, mouseDownR, inputs, getWorldPosition;
+var distance, cnBSeen, canSee, pchObjc, objInstances, isYou, recoilAnimY, mouseDownL, mouseDownR, ammos, weaponIndex, inputs, getWorldPosition;
 console.json = object => console.log(JSON.stringify(object, undefined, 2));
 const defined = object => typeof object !== "undefined";
 
+/*
 const e = document.getElementById('mapInfoHolder').children[3];//.getElementsByTagName('div')[3];
 console.log(e)
 const n = document.createElement('form');
 n.setAttribute('style', 'width: 600px; height: 60px; line-height: 90%;')
 n.innerHTML = "<input type=\"checkbox\" name=\"aimbot\" value=\"true\" id=\"aimbot\" checked><label style=\"color: white; font-size: small;\" for=\"aimbot\"> AIMBOT (1) </label><input type=\"checkbox\" name=\"chems\" value=\"true\" id=\"chems\" checked><label style=\"color: white; font-size: small;\" for=\"chems\"> CHEMS (2) </label><input type=\"checkbox\" name=\"esp\" value=\"true\" id=\"esp\" checked><label style=\"color: white; font-size: small;\" for=\"esp\"> ESP (3) </label><br><label style=\"color: white; font-size: small;\"> Menu By Katistic -- Check out the repo <a href=\"https://github.com/Katistic/WheelChairGUI\" target=\"_blank\">HERE<a></label>"; // <input type=\"checkbox\" name=\"autoreload\" value=\"true\" id=\"autoreload\"><label style=\"color: white; font-size: small;\" for=\"autoreload\"> AUTORELOAD (2) </label>
 document.getElementById('mapInfoHolder').replaceChild(n, e);
+*/
 
 // Displace the trash
 const trash = document.getElementById("aHolder")
@@ -114,41 +131,54 @@ const toggles = {
     chems: document.getElementById('chems'),
 };
 
-const original_encode = TextEncoder.prototype.encodeInto;
+const original_encode = TextEncoder.prototype.encodeInto; // skidLamer
 let hook_encode = new Proxy(original_encode, {
     apply: function(target, _this, _arguments) {
         let game = false;
         try {
             if (_arguments[0].length > 1000) {
-                cnBSeen = _arguments[0].match(/this\['recon']=!0x1,this\['(\w+)']=!0x1/)[1];
-                canSee = _arguments[0].match(/,this\['(\w+)'\]=function\(\w+,\w+,\w+,\w+,\w+\){if\(!\w+\)return!\w+;/)[1];
-                pchObjc = _arguments[0].match(/\(\w+,\w+,\w+\),this\['(\w+)'\]=new \w+\['\w+'\]\(\)/)[1];
-                objInstances = _arguments[0].match(/\[\w+\]\['\w+'\]=!\w+,this\['\w+'\]\[\w+\]\['\w+'\]&&\(this\['\w+'\]\[\w+\]\['(\w+)'\]\['\w+'\]=!\w+/)[1];
-                isYou = _arguments[0].match(/,this\['\w+'\]=!\w+,this\['\w+'\]=!\w+,this\['(\w+)'\]=\w+,this\['\w+'\]\['length'\]=\w+,this\[/)[1];
-                recoilAnimY = _arguments[0].match(/\w*1,this\['\w+'\]=\w*0,this\['\w+'\]=\w*0,this\['\w+'\]=\w*1,this\['\w+'\]=\w*1,this\['\w+'\]=\w*0,this\['\w+'\]=\w*0,this\['(\w+)'\]=\w*0,this\['\w+'\]=\w*0,this\['\w+'\]=\w*0,this\['\w+'\]=\w*0,/)[1];
-                mouseDownL = _arguments[0].match(/this\['\w+'\]=function\(\){this\['(\w+)'\]=\w*0,this\['(\w+)'\]=\w*0,this\['\w+'\]={}/)[1];
-                mouseDownR = _arguments[0].match(/this\['\w+'\]=function\(\){this\['(\w+)'\]=\w*0,this\['(\w+)'\]=\w*0,this\['\w+'\]={}/)[2];
-                inputs = _arguments[0].match(/this\['(\w+)']=function\((\w+),(\w+),\w+,\w+\){(this)/)[1];
-                getWorldPosition = _arguments[0].match(/\['camera']\['(\w+)']\(\);if/)[1]
+                 cnBSeen = _arguments[0].match(/this\['recon']=!0x1,this\['(\w+)']=!0x1/)[1];
+                 canSee = _arguments[0].match(/,this\['(\w+)'\]=function\(\w+,\w+,\w+,\w+,\w+\){if\(!\w+\)return!\w+;/)[1];
+                 pchObjc = _arguments[0].match(/\(\w+,\w+,\w+\),this\['(\w+)'\]=new \w+\['\w+'\]\(\)/)[1];
+                 objInstances = _arguments[0].match(/\[\w+\]\['\w+'\]=!\w+,this\['\w+'\]\[\w+\]\['\w+'\]&&\(this\['\w+'\]\[\w+\]\['(\w+)'\]\['\w+'\]=!\w+/)[1];
+                 //isYou = _arguments[0].match(/,this\['\w+'\]=!\w+,this\['\w+'\]=!\w+,this\['(\w+)'\]=\w+,this\['\w+'\]\['length'\]=\w+,this\[/)[1];
+                 recoilAnimY = _arguments[0].match(/\w*1,this\['\w+'\]=\w*0,this\['\w+'\]=\w*0,this\['\w+'\]=\w*1,this\['\w+'\]=\w*1,this\['\w+'\]=\w*0,this\['\w+'\]=\w*0,this\['(\w+)'\]=\w*0,this\['\w+'\]=\w*0,this\['\w+'\]=\w*0,this\['\w+'\]=\w*0,/)[1];
+                 mouseDownL = _arguments[0].match(/this\['\w+'\]=function\(\){this\['(\w+)'\]=\w*0,this\['(\w+)'\]=\w*0,this\['\w+'\]={}/)[1];
+                 mouseDownR = _arguments[0].match(/this\['\w+'\]=function\(\){this\['(\w+)'\]=\w*0,this\['(\w+)'\]=\w*0,this\['\w+'\]={}/)[2];
+                 getWorldPosition = _arguments[0].match(/\['camera']\['(\w+)']\(\);if/)[1];
+                 didShoot = _arguments[0].match(/\w+\['(\w+)']=!0x1,\w+\['burstCount']=0x0/)[1];
+                 const procInputRegex = _arguments[0].match(/this\['(\w+)']=function\((\w+),(\w+),\w+,\w+\){(this)/);
+                 const reloadRegex = _arguments[0].match(/{!\w+\['reloadTimer']&&\w+\['(\w+)']\[\w+\['(\w+)']]/);
+                 procInputs = procInputRegex[1];
+                 ammos = reloadRegex[1];
+                 weaponIndex = reloadRegex[2];
 
-                game = true;
+                 game = true;
             }
 
-        } catch (e) {
-            // modify stack trace to hide proxy
-            e.stack = e.stack.replace(/\n.*Object\.apply \(<.*/, '');
-            throw e;
+         } catch (e) {
+                // modify stack trace to hide proxy
+                e.stack = e.stack.replace(/\n.*Object\.apply \(<.*/, '');
+                throw e;
         }
         if (game) TextEncoder.prototype.encodeInto = original_encode;
 
         return Function.prototype.apply.apply(target, [_this, _arguments]);
     }
-}); TextEncoder.prototype.encodeInto = hook_encode;
+});
+TextEncoder.prototype.encodeInto = hook_encode;
 conceal_function(original_encode, hook_encode);
 
 let render = function(c) {
 
-    //DEFINES
+    const autos = [
+        "Assault Rifle",
+        "Submachine Gun",
+        "Machine Gun",
+        "Akimbo Uzi",
+        "Famas"
+    ]
+
     const args = arguments.callee.caller.caller.arguments;
     const me = args[3];
     if (!me) return;
@@ -170,53 +200,66 @@ let render = function(c) {
         "camChaseDst": 24,
         "recoilMlt": 0.3,
         "nameOffset": 0.6,
+        "ammos": 0x1c,
         "nameOffsetHat": 0.8,
     };
-    const fonts = {
-        ssBig: '30px\x20Comic Sans',
-        ssSmall: '20px\x20Comic Sans',
-        gmBig: '30px\x20Comic Sans',
-        gmSmall: '20px\x20Comic Sans'
-    }
-    //console.dir(window)
+
     let fullWidth = window.innerWidth;
-    let fullHeight = window.innerHeight;
-    let scaledWidth = canvas.width / scale;
-    let scaledHeight = canvas.height / scale;
-    let camPos = renderer['camera'][getWorldPosition]();
-    const Pi = Math.PI / 2;
-    const PI2 = 2 * Math.PI;
-    let controls = world.controls;
-    let players = world.players.list;
-    let entities = players.filter(x => { return x.active && !x[isYou] });
+        let fullHeight = window.innerHeight;
+        let scaledWidth = canvas.width / scale;
+        let scaledHeight = canvas.height / scale;
+        let camPos = renderer['camera'][getWorldPosition]();
+        const Pi = Math.PI / 2;
+        const PI2 = 2 * Math.PI;
+        let controls = world.controls;
+        let players = world.players.list;
+        let entities = players.filter(x => {
+            return x.active && !x[isYou]
+        });
 
-    //FUNCTIONS
-    let getDistance3D = (fromX, fromY, fromZ, toX, toY, toZ) => {
-        var distX = fromX - toX,
-            distY = fromY - toY,
-            distZ = fromZ - toZ;
-        return Math.sqrt(distX * distX + distY * distY + distZ * distZ);
-    }
+        const downKeys = new Set();
+        const upKeys = new Set();
 
-    let getDistance = (player1, player2) => {
-        return getDistance3D(player1.x, player1.y, player1.z, player2.x, player2.y, player2.z);
-    }
+        /**************************************************************/
+        //<FUNCTIONS>
+        let keyDown = (code) => {
+            return downKeys.has(code);
+        }
 
-    let getDirection = (fromZ, fromX, toZ, toX) => {
-        return Math.atan2(fromX - toX, fromZ - toZ);
-    }
+        let keyUp = (code) => {
+            if (upKeys.has(code)) {
+                upKeys.delete(code);
+                return true;
+            }
+            return false;
+        }
+        //FUNCTIONS
+        let getDistance3D = (fromX, fromY, fromZ, toX, toY, toZ) => {
+            var distX = fromX - toX,
+                distY = fromY - toY,
+                distZ = fromZ - toZ;
+            return Math.sqrt(distX * distX + distY * distY + distZ * distZ);
+        }
 
-    let getXDir = (fromX, fromY, fromZ, toX, toY, toZ) => {
-        var dirY = Math.abs(fromY - toY),
-            dist = getDistance3D(fromX, fromY, fromZ, toX, toY, toZ);
-        return Math.asin(dirY / dist) * (fromY > toY ? -1 : 1);
-    }
+        let getDistance = (player1, player2) => {
+            return getDistance3D(player1.x, player1.y, player1.z, player2.x, player2.y, player2.z);
+        }
 
-    let getAngleDist = (start, end) => {
-        return Math.atan2(Math.sin(end - start), Math.cos(start - end));
-    }
+        let getDirection = (fromZ, fromX, toZ, toX) => {
+            return Math.atan2(fromX - toX, fromZ - toZ);
+        }
 
-    let get = (entity, string) => {
+        let getXDir = (fromX, fromY, fromZ, toX, toY, toZ) => {
+            var dirY = Math.abs(fromY - toY),
+                dist = getDistance3D(fromX, fromY, fromZ, toX, toY, toZ);
+            return Math.asin(dirY / dist) * (fromY > toY ? -1 : 1);
+        }
+
+        let getAngleDist = (start, end) => {
+            return Math.atan2(Math.sin(end - start), Math.cos(start - end));
+        }
+
+        let get = (entity, string) => {
         if (defined(entity) && entity && entity.active) {
             switch (string) {
                 case 'isYou': return entity[isYou];
@@ -229,6 +272,7 @@ let render = function(c) {
         return null;
     }
 
+    // Targeting
     let getTarget = () => {
         if (!defined (distance)) distance = Infinity;
         for (const entity of players.filter(x => { return x.active && !get(x,"isYou") && get(x,"inView") && !get(x,"isFriendly") && x.health > 0})) {
@@ -249,13 +293,15 @@ let render = function(c) {
 
     let camLookAt = (target) => {
         if (!defined(controls) || target === null || (target.x + target.y + target.z2) == 0) return void(controls.target = null);
+
         let offset1 = ((consts.playerHeight - consts.cameraHeight) - (target.crouchVal * consts.crouchDst));
         let offset2 = consts.playerHeight - consts.headScale / 2 - target.crouchVal * consts.crouchDst;
         let recoil = (get(me, "recoilAnimY") * consts.recoilMlt) * 25;
         let xdir = getXDir(controls.object.position.x, controls.object.position.y, controls.object.position.z, target.x, (target.y + offset1), target.z) - ((recoil / 100) * 4);
         let ydir = getDirection(controls.object.position.z, controls.object.position.x, target.z, target.x);
+
         controls.target = {
-            xD:xdir,
+            xD: xdir,
             yD: ydir,
             x: target.x + consts.camChaseDst * Math.sin(ydir) * Math.cos(xdir),
             y: target.y - consts.camChaseDst * Math.sin(xdir),
@@ -337,58 +383,18 @@ let render = function(c) {
 
     let byte2Hex = (n) => {
         var chars = "0123456789ABCDEF";
-        return String(chars.substr((n >> 4) & 0x0F,1)) + chars.substr(n & 0x0F,1);
+        return String(chars.substr((n >> 4) & 0x0F, 1)) + chars.substr(n & 0x0F, 1);
     }
 
-    // Get ammos
-    // So far only know weaponIndex
-    let ammos = () => {
-        var weaponIndex = 0
-        if (me.weapon.melee) {
-            weaponIndex = -1
-        } else {
-            weaponIndex = me.weapon.type
-        }
-    }
+    let rgba2hex = (r, g, b, a = 255) => ("#").concat(byte2Hex(r), byte2Hex(g), byte2Hex(b), byte2Hex(a));
 
-    let rgba2hex = (r,g,b,a = 255) => ("#").concat(byte2Hex(r),byte2Hex(g),byte2Hex(b),byte2Hex(a));
-
-    // Auto reload
-    if (document.getElementById("ammoVal").innerHTML.split("<")[0] == "0 ") {
-        controls.keys[controls.reloadKey] = 1
-    }
-
-    // Switches
-
-    if (controls.keys[49]) {
-        controls.keys[49] = 0
-        SOUND.play('tick_0',0.1)
-        toggles.aimbot.checked = !(toggles.aimbot.checked)
-    } else if (controls.keys[50]) {
-        controls.keys[50] = 0
-        SOUND.play('tick_0',0.1)
-        toggles.chems.checked = !(toggles.chems.checked)
-    } else if (controls.keys[51]) {
-        controls.keys[51] = 0
-        SOUND.play('tick_0',0.1)
-        toggles.esp.checked = !(toggles.esp.checked)
-        console.log(toggles.esp.checked)
-    } /*  else if (controls.keys[50]) {
-        controls.keys[50] = 0
-        SOUND.play('tick_0',0.1)
-        toggles.autoreload.checked = !(toggles.autoreload.checked)
-    }
-    */
-    //ONTICK STUFF
-
-    // target update
     if (defined(controls.target) && controls.target !== null) {
         controls.object.rotation.y = controls.target.yD;
         controls[pchObjc].rotation.x = controls.target.xD;
         controls[pchObjc].rotation.x = Math.max(-Pi, Math.min(Pi, controls[pchObjc].rotation.x));
         controls.yDr = controls[pchObjc].rotation.x % Math.PI;
         controls.xDr = controls.object.rotation.y % Math.PI;
-    }  else controls.target = null;
+    } else controls.target = null;
 
     //aim assist
     if (toggles.aimbot.checked) {
@@ -414,38 +420,25 @@ let render = function(c) {
             }
         }
     }
-    */
 
     //ESP / Chams
-    entities.map((entity, index, array)=> {
-        if (defined(entity[objInstances])) {
+    entities.map((entity, index, array) => {
+        entity[cnBSeen] = true;
 
-            //Chams
-            if (toggles.esp.checked) {
-                entity[cnBSeen] = true;
-            } else {
-                entity[cnBSeen] = false;
-            }
+       if (defined(entity[objInstances])) {
+
             for (let i = 0; i < entity[objInstances].children.length; i++) {
-                const object3d = entity[objInstances].children[i];
-                for (let j = 0; j < object3d.children.length; j++) {
-                    const mesh = object3d.children[j];
-                    if (mesh && mesh.type == "Mesh") {
-                        if (toggles.chems.checked) {
-                            const material = mesh.material;
-                            material.alphaTest = 1;
-                            material.depthTest = false;
-                            material.fog = false;
-                            material.emissive.g = 1;
-                            material.wireframe = true;
-                        } else {
-                            const material = mesh.material;
-                            material.alphaTest = 0;
-                            material.depthTest = true;
-                            material.fog = true;
-                            material.emissive.g = 0;
-                            material.wireframe = false;
-                        }
+               const object3d = entity[objInstances].children[i];
+               for (let j = 0; j < object3d.children.length; j++) {
+                   const mesh = object3d.children[j];
+                   if (mesh && mesh.type == "Mesh") {
+
+                        const material = mesh.material;
+                        material.alphaTest = 1;
+                        material.depthTest = false;
+                        material.fog = false;
+                        material.emissive.g = 1;
+                        material.wireframe = true;
 
                         if (entity.name.includes("  ||  ")) {
                             let d2e = getDistance(me, entity).toString();
@@ -455,10 +448,10 @@ let render = function(c) {
                             let d2e = getDistance(me, entity).toString();
                             entity.name = entity.ogname + "  ||  " + d2e.slice(0, d2e.indexOf(".")-1);
                         }
-                    }
-                }
+                    };
+                };
             }
-        }
+        };
     });
 };
 
