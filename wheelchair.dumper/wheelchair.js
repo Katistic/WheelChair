@@ -16,28 +16,6 @@ function cripple_window(_window) {
         });
     };
 
-    // https://github.com/MasterP-kr/WheelChair/blob/master/user.script.js#L174
-    let global_invisible_define = function (key, value) {
-        invisible_define(window, key, value);
-    };
-
-    // we generate random keys for global variables and make it almost impossible(?)
-    // for outsiders to find programatically
-    let keyMap = {};
-    let genKey = function () {
-        let a = new Uint8Array(20);
-        crypto.getRandomValues(a);
-        return 'hrt' + Array.from(a, x => ('0' + x.toString(16)).substr(-2)).join('');
-    }
-
-    try {
-        if (window.top.document.getElementById('instructions').innerHTML != "Hack by hrt + ttap. Menu by Katistic.") {
-            window.top.document.getElementById('instructions').innerHTML = "Hack by hrt + ttap. Menu by Katistic."
-        }
-    } catch {
-        //pass
-    }
-
     const master_key = 'ttap#4547';
     if (!_window.top[master_key]) {
         invisible_define(_window.top, master_key, shared_state);
@@ -250,7 +228,7 @@ function cripple_window(_window) {
             }
             // aimbot
             let ty = controls.object.rotation.y, tx = controls[pchObjc].rotation.x;
-            if (closest && window[keyMap['toggles']].aimbot.checked) {
+            if (closest) {
                 let target = closest;
                 let y = target.y3 + playerHeight - (headScale/* + hitBoxPad*/) / 2 - target.crouchVal * crouchDst;
                 if (me.weapon[nAuto] && me[didShoot]) {
@@ -258,7 +236,6 @@ function cripple_window(_window) {
                 } else if (!me.aimVal) {
                     inputs[SHOOT] = 1;
                     inputs[SCOPE] = 1;
-                    if (window[keyMap['toggles']].ss.checked && me.weapon.name == "Sniper Rifle") {window[keyMap['toggles']].aimbot.checked = 0};
                 } else {
                     inputs[SCOPE] = 1;
                 }
@@ -273,79 +250,23 @@ function cripple_window(_window) {
                 inputs[SCOPE] = controls[mouseDownR];
             }
 
+
             // silent aim
             inputs[xDr] = +(tx % PI2).toFixed(3);
             inputs[yDr] = +(ty % PI2).toFixed(3);
 
 
             // auto reload
-            try {
-                if (window[keyMap['toggles']].autoreload.checked) {controls.keys[controls.reloadKey] = !haveAmmo() * 1}
-            } catch {}
+            controls.keys[controls.reloadKey] = !haveAmmo() * 1;
 
             // bhop
-            try {
-                if (window[keyMap['toggles']].bhop.checked) {inputs[JUMP] = (controls.keys[controls.jumpKey] && !me[didJump]) * 1}
-            } catch {}
+            inputs[JUMP] = (controls.keys[controls.jumpKey] && !me[didJump]) * 1;
 
             // runs once
             if (!shared_state.get('init')) {
                 shared_state.set('init', true);
 
-                const e = _window.top.document.getElementById('mapInfoHolder').getElementsByTagName('div')[3];
-                const n = _window.top.document.createElement('form');
-                n.setAttribute('style', 'width: 600px; height: 60px; line-height: 90%;')
-                n.innerHTML = "<input type=\"checkbox\" name=\"aimbot\" value=\"true\" id=\"aimbot\"><label style=\"color: white; font-size: small;\" for=\"aimbot\"> AIMBOT (1) </label><input type=\"checkbox\" name=\"autoreload\" value=\"true\" id=\"autoreload\"><label style=\"color: white; font-size: small;\" for=\"autoreload\"> AUTORELOAD (2) </label><input type=\"checkbox\" name=\"bhop\" value=\"true\" id=\"bhop\"><label style=\"color: white; font-size: small;\" for=\"bhop\"> BHOP (3) </label><input type=\"checkbox\" name=\"chems\" value=\"true\" id=\"chems\"><label style=\"color: white; font-size: small;\" for=\"chems\"> CHEMS (4) </label><input type=\"checkbox\" name=\"esp\" value=\"true\" id=\"esp\" checked><label style=\"color: white; font-size: small;\" for=\"esp\"> ESP (5) </label><br><input type=\"checkbox\" name=\"ss\" value=\"true\" id=\"ss\"><label style=\"color: white; font-size: small;\" for=\"ss\"> SAFE SNIPER AIMBOT (6) </label>";
-
-                _window.top.document.getElementById('mapInfoHolder').replaceChild(n, e);
-
-                // Displace Trash
-                if (_window.top.document.getElementById("aHolder")) {
-                    const trash = _window.top.document.getElementById("aHolder")
-                    trash.setAttribute('style', "position: absolute; bottom:5000px")
-                }
-
-                keyMap['toggles'] = genKey();
-                const toggles = {
-                    aimbot: _window.top.document.getElementById('aimbot'),
-                    autoreload: _window.top.document.getElementById('autoreload'),
-                    bhop: _window.top.document.getElementById('bhop'),
-                    esp: _window.top.document.getElementById('esp'),
-                    chems: _window.top.document.getElementById('chems'),
-                    ss: _window.top.document.getElementById('ss'),
-                };
-                global_invisible_define(keyMap['toggles'], toggles);
-
                 drawVisuals = function(c) {
-
-                    // keybindings
-
-                    if (controls.keys[49]) {
-                        controls.keys[49] = 0
-                        _window.SOUND.play('tick_0',0.1)
-                        window[keyMap['toggles']].aimbot.checked = !(window[keyMap['toggles']].aimbot.checked)
-                    } else if (controls.keys[50]) {
-                        controls.keys[50] = 0
-                        _window.SOUND.play('tick_0',0.1)
-                        window[keyMap['toggles']].autoreload.checked = !(window[keyMap['toggles']].autoreload.checked)
-                    } else if (controls.keys[51]) {
-                        controls.keys[51] = 0
-                        _window.SOUND.play('tick_0',0.1)
-                        window[keyMap['toggles']].bhop.checked = !(window[keyMap['toggles']].bhop.checked)
-                    } else if (controls.keys[52]) {
-                        controls.keys[52] = 0
-                        _window.SOUND.play('tick_0',0.1)
-                        window[keyMap['toggles']].chems.checked = !(window[keyMap['toggles']].chems.checked)
-                    } else if (controls.keys[53]) {
-                        controls.keys[53] = 0
-                        _window.SOUND.play('tick_0',0.1)
-                        window[keyMap['toggles']].esp.checked = !(window[keyMap['toggles']].esp.checked)
-                    } else if (controls.keys[54]) {
-                        controls.keys[54] = 0
-                        _window.SOUND.play('tick_0',0.1)
-                        window[keyMap['toggles']].ss.checked = !(window[keyMap['toggles']].ss.checked)
-                    }
-
                     let scalingFactor = arguments.callee.caller.caller.arguments[0];
                     let perspective = arguments.callee.caller.caller.arguments[2];
                     let scaledWidth = c.canvas.width / scalingFactor;
@@ -393,6 +314,7 @@ function cripple_window(_window) {
                         xmax = (xmax + 1) / 2;
                         ymax = (ymax + 1) / 2;
 
+
                         // save and restore these variables later so they got nothing on us
                         const original_strokeStyle = c.strokeStyle;
                         const original_lineWidth = c.lineWidth;
@@ -414,23 +336,19 @@ function cripple_window(_window) {
                         ymax = yScale * (1 - ymax);
                         xmin = xScale * xmin;
                         xmax = xScale * xmax;
-                        if (window[keyMap['toggles']].esp.checked) {
-                            original_moveTo.apply(c, [xmin, ymin]);
-                            original_lineTo.apply(c, [xmin, ymax]);
-                            original_lineTo.apply(c, [xmax, ymax]);
-                            original_lineTo.apply(c, [xmax, ymin]);
-                            original_lineTo.apply(c, [xmin, ymin]);
-                            original_stroke.apply(c, []);
-                        }
+                        original_moveTo.apply(c, [xmin, ymin]);
+                        original_lineTo.apply(c, [xmin, ymax]);
+                        original_lineTo.apply(c, [xmax, ymax]);
+                        original_lineTo.apply(c, [xmax, ymin]);
+                        original_lineTo.apply(c, [xmin, ymin]);
+                        original_stroke.apply(c, []);
 
                         // health bar
-                        if (window[keyMap['toggles']].esp.checked) {
-                            c.fillStyle = "rgba(255,50,50,1)";
-                            let barMaxHeight = ymax - ymin;
-                            original_fillRect.apply(c, [xmin - 7, ymin, -10, barMaxHeight]);
-                            c.fillStyle = "#00FFFF";
-                            original_fillRect.apply(c, [xmin - 7, ymin, -10, barMaxHeight * (e.health / e.maxHealth)]);
-                        }
+                        c.fillStyle = "rgba(255,50,50,1)";
+                        let barMaxHeight = ymax - ymin;
+                        original_fillRect.apply(c, [xmin - 7, ymin, -10, barMaxHeight]);
+                        c.fillStyle = "#00FFFF";
+                        original_fillRect.apply(c, [xmin - 7, ymin, -10, barMaxHeight * (e.health / e.maxHealth)]);
 
                         // info
                         c.font = "60px Sans-serif";
@@ -439,21 +357,15 @@ function cripple_window(_window) {
                         c.lineWidth = 1;
                         let x = xmax + 7;
                         let y = ymax;
-                        if (window[keyMap['toggles']].esp.checked) {
-                            original_fillText.apply(c, [e.name, x, y]);
-                            original_strokeText.apply(c, [e.name, x, y]);
-                        }
+                        original_fillText.apply(c, [e.name, x, y]);
+                        original_strokeText.apply(c, [e.name, x, y]);
                         c.font = "30px Sans-serif";
                         y += 35;
-                        if (window[keyMap['toggles']].esp.checked) {
-                            original_fillText.apply(c, [e.weapon.name, x, y]);
-                            original_strokeText.apply(c, [e.weapon.name, x, y]);
-                        }
+                        original_fillText.apply(c, [e.weapon.name, x, y]);
+                        original_strokeText.apply(c, [e.weapon.name, x, y]);
                         y += 35;
-                        if (window[keyMap['toggles']].esp.checked) {
-                            original_fillText.apply(c, [e.health + ' HP', x, y]);
-                            original_strokeText.apply(c, [e.health + ' HP', x, y]);
-                        }
+                        original_fillText.apply(c, [e.health + ' HP', x, y]);
+                        original_strokeText.apply(c, [e.health + ' HP', x, y]);
 
                         original_restore.apply(c, []);
 
@@ -463,26 +375,13 @@ function cripple_window(_window) {
                         c.fillStyle = original_fillStyle;
 
                         // skelly chams
-                        // note: this can be done better
-                        if (window[keyMap['toggles']].chems.checked) {
-                            if (e[legMeshes][0]) {
-                                _window.top.console.log("There")
-                                let material = e[legMeshes][0].material;
-                                material.alphaTest = 1;
-                                material.depthTest = false;
-                                material.fog = false;
-                                material.emissive.g = 1;
-                                material.wireframe = true;
-                            }
-                        } else {
-                            if (e[legMeshes][0]) {
-                                let material = e[legMeshes][0].material;
-                                material.alphaTest = 0;
-                                material.depthTest = true;
-                                material.fog = true;
-                                material.emissive.g = 0;
-                                material.wireframe = false;
-                            }
+                        if (e[legMeshes][0]) {
+                            let material = e[legMeshes][0].material;
+                            material.alphaTest = 1;
+                            material.depthTest = false;
+                            material.fog = false;
+                            material.emissive.g = 1;
+                            material.wireframe = true;
                         }
                     }
                 };
@@ -587,64 +486,8 @@ function cripple_window(_window) {
             _window[atob('ZG9jdW1lbnQ=')] = window[atob('ZG9jdW1lbnQ=')], _window[atob('ZG9jdW1lbnQ=')][atob('d3JpdGU=')](atob('PGEgaHJlZj0i') + atob('aHR0cHM6'+'Ly9naXRodWIuY2'+'9tL2hydC93aGVlb'+'GNoYWly') + atob('Ij4=') + atob('VmVyc2lvbiBtaXNzbWF0Y2gg') + version[1] + atob('PC9hPg==') + atob('PHNjcmlwdD53aW5kb3cubG9jYXRpb24uaHJlZj0naHR0cHM6Ly9naXRodWIuY29tL2hydC93aGVlbGNoYWlyJzwvc2NyaXB0Pg=='));
         }
 
-        // note: this window is not the main window
-        window.canSee = clean_script.match(/\s*,\s*this\s*\[\s*'(\w+)'\s*\]\s*=\s*function\s*\(\s*\w+\s*,\s*\w+\s*,\s*\w+\s*,\s*\w+\s*,\s*\w+\)\s*{\s*if\s*\(\s*(?:true\s*&&\s*)?!\s*\w+\)return\s*(?:true\s*&&\s*)?!\s*\w+;/)[1];
-        window.pchObjc = clean_script.match(/\s*\(\s*\w+\s*,\s*\w+\s*,\s*\w+\)\s*,\s*this\s*\[\s*'(\w+)'\s*\]\s*=\s*new \w+\s*\[\s*'\w+'\s*\]\s*\(\s*\)/)[1];
-        window.objInstances = clean_script.match(/\s*\[\w+\]\s*\[\s*'\w+'\s*\]\s*=\s*(?:true\s*&&\s*)?!\s*\w+\s*,\s*this\s*\[\s*'\w+'\s*\]\s*\[\w+\]\s*\[\s*'\w+'\s*\]\s*&&\s*\(\s*this\s*\[\s*'\w+'\s*\]\s*\[\w+\]\s*\[\s*'(\w+)'\s*\]\s*\[\s*'\w+'\s*\]\s*=\s*(?:true\s*&&\s*)?!\s*\w+/)[1];
-        window.isYou = clean_script.match(/\s*,\s*this\s*\[\s*'\w+'\s*\]\s*=\s*(?:true\s*&&\s*)?!\s*\w+\s*,\s*this\s*\[\s*'\w+'\s*\]\s*=\s*(?:true\s*&&\s*)?!\s*\w+\s*,\s*this\s*\[\s*'(\w+)'\s*\]\s*=\s*\w+\s*,\s*this\s*\[\s*'\w+'\s*\]\s*\[\s*'length'\s*\]\s*=\s*\w+\s*,\s*this\s*\[/)[1];
-        window.recoilAnimY = clean_script.match(/\w*1\s*,\s*this\s*\[\s*'\w+'\s*\]\s*=\s*\w*0\s*,\s*this\s*\[\s*'\w+'\s*\]\s*=\s*\w*0\s*,\s*this\s*\[\s*'\w+'\s*\]\s*=\s*\w*1\s*,\s*this\s*\[\s*'\w+'\s*\]\s*=\s*\w*1\s*,\s*this\s*\[\s*'\w+'\s*\]\s*=\s*\w*0\s*,\s*this\s*\[\s*'\w+'\s*\]\s*=\s*\w*0\s*,\s*this\s*\[\s*'(\w+)'\s*\]\s*=\s*\w*0\s*,\s*this\s*\[\s*'\w+'\s*\]\s*=\s*\w*0\s*,\s*this\s*\[\s*'\w+'\s*\]\s*=\s*\w*0\s*,\s*this\s*\[\s*'\w+'\s*\]\s*=\s*\w*0\s*,\s*/)[1];
-        window.mouseDownL = clean_script.match(/this\s*\[\s*'\w+'\s*\]\s*=\s*function\s*\(\s*\)\s*{\s*this\s*\[\s*'(\w+)'\s*\]\s*=\s*\w*0\s*,\s*this\s*\[\s*'(\w+)'\s*\]\s*=\s*\w*0\s*,\s*this\s*\[\s*'\w+'\s*\]\s*=\s*{\s*}/)[1];
-        window.mouseDownR = clean_script.match(/this\s*\[\s*'\w+'\s*\]\s*=\s*function\s*\(\s*\)\s*{\s*this\s*\[\s*'(\w+)'\s*\]\s*=\s*\w*0\s*,\s*this\s*\[\s*'(\w+)'\s*\]\s*=\s*\w*0\s*,\s*this\s*\[\s*'\w+'\s*\]\s*=\s*{\s*}/)[2];
-        window.ammos = clean_script.match(/\s*\[\s*\w+\s*\]\s*\[\s*'\w+'\s*\]\s*\|\s*\|\s*\w+\s*\;\s*for\s*\(\s*var\s*\w+\s*\=\s*\w+\s*\;\s*\w+\s*\<\s*this\s*\[\s*'\w+'\s*\]\s*\[\s*'length'\s*\]\s*\;\s*\+\s*\+\s*\w+\s*\)\s*this\s*\[\s*'\w+'\s*\]\s*\[\s*'push'\s*\]\s*\(\s*\w+\s*\)\s*\,\s*this\s*\[\s*'(\w+)'\s*\]\s*\[\s*'push'\s*\]\s*\(\s*\w+\s*\[\s*'\w+'\s*\]\s*\[\s*this\s*\[\s*'\w+'\s*\]\s*\[\s*\w+\s*\]\s*\]\s*\[\s*'\w+'\s*\]\s*\)\s*\;\s*this\s*\[\s*'/)[1];
-        window.weaponIndex = clean_script.match(/\w+&&\w+\s*\[\s*'\w+'\s*\]\s*\(\s*this\s*\[\s*'\w+'\s*\]\s*\)\s*\,\s*\w+\s*\>\s*\=\s*this\s*\[\s*'\w+'\s*\]\s*&&\s*\(\s*this\s*\[\s*'\w+'\s*\]\s*\=\s*\w+\s*\,\s*this\s*\[\s*'\w+'\s*\]\s*\=\s*!\w+\s*\,\s*this\s*\[\s*'\w+'\s*\]\s*\[\s*this\s*\[\s*'(\w+)'\s*\]\s*\]\s*\=\s*this\s*\[\s*'\w+'\s*\]\s*\[\s*'\w+'\s*\]\s*\,\s*\w+\s*\[\s*'\w+'\s*\]\s*\(\s*this\s*\)\s*\)\s*\;\s*\}\s*\w+\s*\<\s*this\s*\[\s*'\w+'\s*\]\s*&&\s*\(\s*this\s*\[\s*'\w+'\s*\]\s*-\s*\=\s*\w+\s*\,\s*\w+\s*\>\s*this\s*\[\s*'\w+'\s*\]\s*&&\s*\(\s*this\s*\[\s*'\w+'\s*\]\s*\=\s*\w+\s*\)\s*\)\s*\;\s*for\s*\(\s*\w+\s*\=\s*\w+\s*\;\s*\w+\s*\<\s*this\s*\[\s*'\w+'\s*\]\s*\[\s*'length'\s*\]\s*\;\s*\+\s*\+\s*\w+\s*\)\s*\w+\s*\<\s*this\s*\[\s*'\w+'\s*\]\s*\[\s*\w+\s*\]\s*&&\s*\(\s*this\s*\[\s*'\w+'\s*\]\s*\[\s*\w+\s*\]\s*-\s*\=\s*\w+\s*\,\s*\w+\s*\>\s*this\s*\[\s*'\w+'\s*\]\s*\[\s*\w+\s*\]\s*&&\s*\(\s*this\s*\[\s*'\w+'\s*\]\s*\[\s*\w+\s*\]\s*\=\s*\w+\s*\)\s*\)\s*\;\s*\w+\s*\(\s*this\s*\[\s*'\w+'\s*\]\s*\)\s*\{\s*var\s*\w+\s*\=\s*this\s*\[\s*'\w+'\s*\]\s*\|\s*\|\s*!this\s*\[\s*'\w+'\s*\]\s*\[\s*'\w+'\s*\]\s*&&\w+\s*\[\s*\w+\s*\]\s*\;\s*/)[1];
-        window.didJump = clean_script.match(/\s*\{\s*\w+\s*\[\s*'\w+'\s*\]\s*\=\s*!\w+\s*\,\s*\w+\s*\[\s*'\w+'\s*\]\s*\=\s*\w+\s*\[\s*'\w+'\s*\]\s*\*\s*\w+\s*\[\s*'\w+'\s*\]\s*\;\s*var\s*\w+\s*\=\s*this\s*\[\s*'\w+'\s*\]\s*\?\s*\w+\s*\[\s*'\w+'\s*\]\s*:\w+\s*\[\s*'\w+'\s*\]\s*\;\s*\w+\s*\[\s*'\w+'\s*\]\s*\*\s*\=\s*\w+\s*\,\s*\w+\s*\[\s*'\w+'\s*\]\s*\*\s*\=\s*\w+\s*\;\s*\}\s*\}\s*\,\s*this\s*\[\s*'\w+'\s*\]\s*\=\s*function\s*\(\s*\w+\s*\,\s*\w+\s*\)\s*\{\s*\w+\s*\[\s*'\w+'\s*\]\s*&&\w+\s*\[\s*'\w+'\s*\]\s*\[\s*'\w+'\s*\]\s*&&\w+\s*\?\s*this\s*\[\s*'\w+'\s*\]\s*\(\s*\w+\s*\)\s*:\s*\(\s*\w+\s*\[\s*'(\w+)'\s*\]\s*&&!\w+&&\s*\(\s*\w+\s*\[\s*/)[1];
-        window.nAuto = clean_script.match(/\s*\{\s*'\w+':'\w+'\s*\,\s*'\w+':\w+\s*\.\s*\w+\s*\,\s*'\w+':\w+\s*\,\s*'\w+':\w+\s*\.\s*\w+\s*\,\s*'\w+':\w+\s*\.\s*\w+\s*\,\s*'\w+':\w+\s*\.\s*\w+\s*\}\s*\,\s*'\w+':!\w+\s*\,\s*'(\w+)':!\w+\s*\,\s*'\w+':\w+\s*\,\s*'\w+':!\w+\s*\,\s*'\w+':\w+\s*\,\s*'\w+':\w+\s*\,\s*'\w+':\w+\s*\.\s*\w+\s*\,\s*'\w+':\w+\s*\,\s*'\w+':\w+\s*\,\s*'/)[1];
-        window.didShoot = clean_script.match(/&&\w+\s*\>\s*\=\s*this\s*\[\s*'\w+'\s*\]\s*\[\s*'\w+'\s*\]\s*\/\s*\w+&&this\s*\[\s*'\w+'\s*\]\s*\<\s*this\s*\[\s*'\w+'\s*\]\s*\[\s*'\w+'\s*\]\s*\/\s*\w+&&\w+\s*\[\s*'\w+'\s*\]\s*\(\s*this\s*\[\s*'\w+'\s*\]\s*\)\s*\,\s*\w+\s*\>\s*\=\s*this\s*\[\s*'\w+'\s*\]\s*&&\s*\(\s*this\s*\[\s*'\w+'\s*\]\s*\=\s*\w+\s*\,\s*this\s*\[\s*'(\w+)'\s*\]\s*\=\s*!\w+\s*\,\s*this\s*\[\s*'\w+'\s*\]\s*\[\s*this\s*\[\s*'\w+'\s*\]\s*\]\s*\=\s*this\s*\[\s*'\w+'\s*\]\s*\[\s*'\w+'\s*\]\s*\,\s*\w+\s*\[\s*'\w+'\s*\]\s*\(\s*this\s*\)\s*\)\s*\;\s*\}\s*\w+\s*\<\s*/)[1];
-        window.scrollToSwap = clean_script.match(/\s*\?\s*\w+:\w+\s*\,\s*\w+\s*\[\s*'\w+'\s*\]\s*\[\s*\w+\s*\[\s*'\w+'\s*\]\s*\]\s*\?\s*\w+:\w+\s*\,\s*\w+\s*\[\s*'\w+'\s*\]\s*\[\s*\w+\s*\[\s*'\w+'\s*\]\s*\]\s*\?\s*\w+:\w+\s*\,\s*\w+\s*\[\s*'(\w+)'\s*\]\s*\?\s*\w+\s*\[\s*'\w+'\s*\]\s*\*\s*\w+:\w+\s*\,\s*\w+\s*\[\s*'\w+'\s*\]\s*\]\s*/)[1];
-        window.scrollDelta = clean_script.match(/\s*\?\s*\(\s*\w+\s*\[\s*'\w+'\s*\]\s*\[\s*'\w+'\s*\]\s*\?\s*\w+\s*\[\s*'\w+'\s*\]\s*\[\s*'\w+'\s*\]\s*\[\s*'\w+'\s*\]\s*\(\s*\w+\s*\[\s*'\w+'\s*\]\s*\,\s*\w+\s*\,\s*\w+\s*\[\s*'\w+'\s*\]\s*\)\s*:'\w+'\s*\=\s*\=\s*\w+\s*\[\s*'\w+'\s*\]\s*\?\s*\(\s*\w+\s*\+\s*\=\s*\w+\s*\*\s*\w+\s*\[\s*'(\w+)'\s*\]\s*\,\s*\w+/)[1];
-        window.fakeKey = clean_script.match(/\s*\?\s*\w+:\w+\s*\,\s*\w+\s*\[\s*'\w+'\s*\]\s*\[\s*\w+\s*\[\s*'\w+'\s*\]\s*\]\s*\?\s*\w+:\w+\s*\,\s*\w+\s*\[\s*'\w+'\s*\]\s*\?\s*\w+\s*\[\s*'\w+'\s*\]\s*\*\s*\w+:\w+\s*\,\s*\w+\s*\[\s*'\w+'\s*\]\s*\]\s*\,\s*\w+\s*\[\s*'\w+'\s*\]\s*&&\s*\(\s*\w+\s*\[\s*'\w+'\s*\]\s*\=\s*\w+\s*\[\s*'\w+'\s*\]\s*\,\s*!\w+\s*\[\s*'\w+'\s*\]\s*&&\w+\s*\[\s*'(\w+)'\s*\]\s*\(\s*\w+\s*\,\s*\w+\s*\)\s*\)\s*\,\s*\w+\s*\[\s*'\w+'\s*\]\s*\=\s*\w+\s*\,\s*\w+\s*\[\s*'\w+'\s*\]\s*\=\s*\w+\s*\,\s*!\w+\s*\[\s*'\w+'\s*\]\s*&&\w+\s*\[\s*'\w+'\s*\]\s*\[\s*'push'\s*\]\s*\(\s*\w+\s*\)\s*\,\s*\w+\s*\[\s*'\w+'\s*\]\s*\(\s*\w+\s*\,\s*\w+\s*\,\s*!\w+\s*\,\s*\w+\s*\[\s*'\w+'\s*\]\s*\)\s*\,\s*\w+\s*\[\s*'\w+'\s*\]\s*\(\s*\w+\s*\[\s*'\w+'\s*\]\s*\,\s*\w+\s*\[\s*'\w+'\s*\]\s*\+\s*\w+\s*\[\s*'\w+'\s*\]\s*-\w+\s*\[\s*'\w+'\s*\]\s*\,\s*\w+\s*\[\s*'\w+'\s*\]\s*\)\s*\,\s*\w+\s*\[\s*'\w+'\s*\]\s*\(\s*\w+\s*\[\s*'\w+'\s*\]\s*\,\s*\w+\s*\[\s*'\w+'\s*\]\s*\+\s*\w+\s*\[\s*'\w+'\s*\]\s*\*\s*\w+\s*\[\s*'\w+'\s*\]\s*\+\s*\w+\s*\.\s*\w+\s*\*\s*\w+\s*\[\s*'\w+'\s*\]\s*\,\s*\w+\s*\)\s*\,\s*\w+\s*\[\s*'\w+'\s*\]\s*\(\s*\w+\s*\[\s*'\w+'\s*\]\s*\(\s*\w+\s*\,\s*\w+\s*\[\s*'\w+'\s*\]\s*\*\s*\w+\s*\)\s*\,\s*\w+\s*\[\s*'\w+'\s*\]\s*\[\s*'\w+'\s*\]\s*&&!/)[1];
-        window.wSwap = clean_script.match(/\s*\,\s*\w+\s*\[\s*'\w+'\s*\]\s*\(\s*\)\s*\,\s*\w+\s*\(\s*'\w+'\s*\+\s*\w+\s*\[\s*'\w+'\s*\]\s*\,\s*\w+\s*\)\s*\,\s*\w+\s*\(\s*\w+\s*\,\s*!\w+\s*\)\s*\,\s*\w+\s*\[\s*'\w+'\s*\]\s*\=\s*\w+\s*\;\s*\w+\s*\{\s*\w+\s*\(\s*\w+\s*\[\s*'\w+'\s*\]\s*\[\s*\w+\s*\]\s*!\s*\=\s*\=\s*\w+&&\w+\s*\=\s*\=\s*\w+\s*\[\s*'\w+'\s*\]\s*&&\w+\s*\(\s*\w+\s*\)\s*\,\s*!\w+\s*\[\s*'\w+'\s*\]\s*\)\s*\w+\s*\;\s*\w+\s*\[\s*'\w+'\s*\]\s*\[\s*\w+\s*\]\s*!\s*\=\s*\=\s*\w+&&\s*\(\s*\w+\s*\[\s*'\w+'\s*\]\s*\[\s*\w+\s*\]\s*\=\s*\w+\s*\,\s*\w+\s*\<\s*\=\s*\w+\s*\[\s*'\w+'\s*\]\s*\[\s*'\w+'\s*\]\s*\(\s*\w+\s*\)\s*&&\w+\s*\[\s*'\w+'\s*\]\s*\(\s*\)\s*\,\s*\w+&&\s*\(\s*\w+\s*\=\s*\=\s*\w+\s*\[\s*'\w+'\s*\]\s*\?\s*\w+\s*\[\s*'(\w+)'\s*\]\s*\=\s*\w+:\w+\s*\=\s*\=\s*\w+\s*\[\s*'\w+'\s*\]\s*\?\s*\w+\s*\[\s*'/)[1];
-        window.getWorldPosition = clean_script.match(/\s*\]\s*\[\s*\w+\s*\]\s*\[\s*'\w+'\s*\]\s*\(\s*\w+\s*\?\s*-\w+\s*\*\s*\w+\s*\[\s*'\w+'\s*\]\s*\[\s*'\w+'\s*\]\s*:\w+\s*\,\s*\w+\s*\[\s*'\w+'\s*\]\s*\[\s*'\w+'\s*\]\s*\|\s*\|\s*\w+\s*\,\s*-\w+\s*\[\s*'\w+'\s*\]\s*\[\s*'\w+'\s*\]\s*\,\s*\w+\s*\,\s*\w+\s*\,\s*\w+\s*\,\s*\w+\s*\*\s*\(\s*\w+\s*\[\s*'\w+'\s*\]\s*\[\s*'\w+'\s*\]\s*\|\s*\|\s*\w+\s*\)\s*\,\s*\w+\s*\)\s*\;\s*\w+\s*\(\s*!\w+\s*\)\s*\(\s*\w+\s*\=\s*\w+\s*\[\s*'\w+'\s*\]\s*\[\s*\w+\s*\[\s*'\w+'\s*\]\s*\]\s*\[\s*'\w+'\s*\]\s*\[\s*\w+\s*\]\s*\[\s*'(\w+)'\s*\]\s*\(\s*\)\s*\[\s*'\w+'\s*\]\s*\(\s*\)\s*\)\s*\[\s*'\w+'\s*\]\s*\(\s*\w+\s*\[\s*'\w+'\s*\]\s*\)\s*\,\s*\w+\s*\[\s*'\w+'\s*\]\s*\=\s*\(\s*\w+\s*\[\s*'\w+'\s*\]\s*\+\s*\w+\s*\)\s*\/\s*\w+\s*\,\s*\w+\s*\[\s*'\w+'\s*\]\s*\=\s*\(\s*\w+\s*\[\s*'\w+'\s*\]\s*\+\s*\w+\s*\)\s*\/\s*\w+\s*\,\s*\w+\s*\[\s*'\w+'\s*\]\s*\(\s*\w+\s*\[\s*'\w+'\s*\]\s*\,\s*\w+\s*\[\s*'\w+'\s*\]\s*\)\s*\;\s*\}\s*\w+\s*\(\s*!\w+\s*\[\s*'\w+'\s*\]\s*\[\s*'\w+'\s*\]\s*&&\w+\s*\[\s*'\w+'\s*\]\s*\)\s*for\s*\(\s*\w+\s*\=\s*\w+\s*\;\s*\w+\s*\<\s*/)[1];
-        window.legMeshes = clean_script.match(/\s*\]\s*\,\s*\w+\s*\[\s*'\w+'\s*\]\s*\+\s*\(\s*\w+\s*\[\s*'\w+'\s*\]\s*&&!\w+\s*\[\s*'\w+'\s*\]\s*\[\s*'\w+'\s*\]\s*\?\s*\w+:\w+\s*\[\s*'\w+'\s*\]\s*\(\s*\w+\s*\.\s*\w+\s*\*\s*\w+\s*\)\s*\)\s*\,\s*\w+\s*\[\s*'\w+'\s*\]\s*\)\s*\,\s*'\w+'!\s*\=\s*\w+\s*\[\s*'\w+'\s*\]\s*&&\w+\s*\[\s*'\w+'\s*\]\s*\(\s*\w+\s*\[\s*'\w+'\s*\]\s*\,\s*\w+\s*\[\s*'\w+'\s*\]\s*\+\s*\(\s*\w+\s*\[\s*'\w+'\s*\]\s*\?\s*\w+\s*\[\s*'\w+'\s*\]\s*\[\s*'\w+'\s*\]\s*\?\s*\w+\s*\.\s*\w+\s*\*\s*-\w+:\w+:\w+\s*\*\s*-\w+\s*\)\s*\)\s*\,\s*\w+-\s*\=\s*\w+\s*\*\s*\(\s*\w+\s*\[\s*'\w+'\s*\]\s*\*\s*\w+\s*\[\s*'\w+'\s*\]\s*\)\s*\,\s*\w+-\s*\=\s*\w+\s*\*\s*\(\s*\w+\s*\[\s*'\w+'\s*\]\s*\*\s*\w+\s*\[\s*'\w+'\s*\]\s*\)\s*\;\s*for\s*\(\s*var\s*\w+\s*\=\s*\w+\s*\;\s*\w+\s*\<\s*\w+\s*\[\s*'(\w+)'\s*\]\s*\[\s*'length'\s*\]\s*\;\s*\+\s*\+\s*\w+\s*\)\s*\w+\s*\[\s*'\w+'\s*\]\s*\?\s*\w+\s*\[\s*/)[1];
+        _window.top.console.log(clean_script)
 
-        const inputs = clean_script.match(/\s*\(\s*\w+\s*,\s*\w*1\)\)\s*,\s*\w+\s*\[\s*'\w+'\s*\]\s*=\s*\w*0\s*,\s*\w+\s*\[\s*'\w+'\s*\]\s*=\s*\w*0\s*,\s*(?:true\s*&&\s*)?!\s*(\w+)\s*\[\s*'\w+'\s*\]\s*&&\s*\w+\s*\[\s*'\w+'\s*\]\s*\[\s*'push'\s*\]\s*\(\s*(\w+)\)\s*,\s*(\w+)\s*\[\s*'\w+'\s*\]\s*/)[2];
-        const world = clean_script.match(/\s*\(\s*\w+\s*,\s*\w*1\)\)\s*,\s*\w+\s*\[\s*'\w+'\s*\]\s*=\s*\w*0\s*,\s*\w+\s*\[\s*'\w+'\s*\]\s*=\s*\w*0\s*,\s*(?:true\s*&&\s*)?!\s*(\w+)\s*\[\s*'\w+'\s*\]\s*&&\s*\w+\s*\[\s*'\w+'\s*\]\s*\[\s*'push'\s*\]\s*\(\s*(\w+)\)\s*,\s*(\w+)\s*\[\s*'\w+'\s*\]\s*/)[1];
-        const consts = clean_script.match(/\w+\s*\[\s*'\w+'\s*\]\s*\)\s*,\s*\w+\s*\[\s*'\w+'\s*\]\s*\(\s*\w+\s*\[\s*'\w+'\s*\]\s*,\s*\w+\s*\[\s*'\w+'\s*\]\s*\+\w+\s*\[\s*'\w+'\s*\]\s*\*(\w+)/)[1];
-        const me = clean_script.match(/\s*\(\s*\w+\s*,\s*\w*1\)\)\s*,\s*\w+\s*\[\s*'\w+'\s*\]\s*=\s*\w*0\s*,\s*\w+\s*\[\s*'\w+'\s*\]\s*=\s*\w*0\s*,\s*(?:true\s*&&\s*)?!\s*(\w+)\s*\[\s*'\w+'\s*\]\s*&&\s*\w+\s*\[\s*'\w+'\s*\]\s*\[\s*'push'\s*\]\s*\(\s*(\w+)\)\s*,\s*(\w+)\s*\[\s*'\w+'\s*\]\s*/)[3];
-        const math = clean_script.match(/\\x20\-50\%\)\\x20rotate\s*\(\s*'\+\s*\(\s*(\w+)\s*\[\s*'\w+'\s*\]\s*\(\s*\w+\s*\[\w+\]\s*\[\s*'\w+'\s*\]\s*/)[1];
-
-        const code_to_overwrite = script.match_with_comments(/\w+\s*\[\s*'\w+'\s*\]\s*&&\s*\(\s*\w+\s*\[\s*'\w+'\s*\]\s*=\s*\w+\s*\[\s*'\w+'\s*\]\s*,\s*!\s*\w+\s*\[\s*'\w+'\s*\]\s*&&\s*\w+\s*\[\s*'\w+'\s*\]\s*\(\s*\w+\s*,\s*\w*1\)\)\s*,\s*\w+\s*\[\s*'\w+'\s*\]\s*=\s*\w*0\s*,\s*\w+\s*\[\s*'\w+'\s*\]\s*=\s*\w*0/);
-        const ttapParams = [me, inputs, world, consts, math].toString();
-        let call_hrt = `top['` + master_key + `'].get('hrt')(` + ttapParams + `)`;
-
-        if (call_hrt.length + 4 > code_to_overwrite[0].length) {
-            throw 'WHEELCHAIR: target function too small ' + [call_hrt.length, code_to_overwrite[0].length];
-        }
-        let whitespaces = code_to_overwrite[0].match(/\s/g);
-        for (let i = 0; i < whitespaces && whitespaces.length; i++) {
-            call_hrt += whitespaces[i];
-        }
-        call_hrt += '/*';
-        while (call_hrt.length < code_to_overwrite[0].length - 2) {
-            call_hrt += '*';
-        }
-        call_hrt += '*/';
-
-        script = script.replace(code_to_overwrite[0], call_hrt);
-        script = script.slice(0, code_to_overwrite.index) + call_hrt + script.slice(code_to_overwrite.index + code_to_overwrite[0].length);
-        conceal_string(code_to_overwrite[0], call_hrt);
-
-        /***********************************************************************************************************/
-        /* Below are some misc features which I wouldn't consider bannable                                         */
-        // all weapons trails on
-        // script = script.replace(/\w+\['weapon'\]&&\w+\['weapon'\]\['trail'\]/g, "true")
-
-        // color blind mode
-        // script = script.replace(/#9eeb56/g, '#00FFFF');
-
-        // no zoom
-        // script = script.replace(/,'zoom':.+?(?=,)/g, ",'zoom':1");
-        /***********************************************************************************************************/
         return script;
     }
 
