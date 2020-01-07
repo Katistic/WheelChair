@@ -1,10 +1,13 @@
+# This repository has been archived.
+# Please go [here](https://github.com/Katistic/Krunker-Hacks) for future krunker hack updates.
+
 # 1.9.5 KrunkerPlus
 
 This repository follows and edits [THEGUY3ds' krunkerplus hack.](https://github.com/THEGUY3ds/Krunkerplus-REWORKED-beta-test)
 
 ```diff
 + Works with 1.9.3
-+ Violetmonkey script!
++ Violentmonkey script!
 - Minimal features
 - No menu as of now
 ```
@@ -14,7 +17,7 @@ This repository follows and edits [THEGUY3ds' krunkerplus hack.](https://github.
 - Chams
 - ESP
 
-### Violetmonkey install
+### Violentmonkey install
 
 To install, copy [this script](https://raw.githubusercontent.com/Katistic/WheelChairGUI/master/hack.tampermonkey.js) into violetmonkey
 
