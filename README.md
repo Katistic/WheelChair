@@ -1,5 +1,6 @@
-# This repository has been archived.
-# Please go [here](https://github.com/Katistic/Krunker-Hacks) for future krunker hack updates.
+# This repository has been archived. Please go [here](https://github.com/Katistic/Krunker-Hacks) for future krunker hack updates.
+
+###
 
 # 1.9.5 KrunkerPlus
 
