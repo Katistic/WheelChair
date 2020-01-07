@@ -1,13 +1,12 @@
-# 1.9.3 KrunkerPlus
+# 1.9.5 KrunkerPlus
 
 This repository follows and edits [THEGUY3ds' krunkerplus hack.](https://github.com/THEGUY3ds/Krunkerplus-REWORKED-beta-test)
 
 ```diff
 + Works with 1.9.3
-+ Menu is up to date with hack features!
-+ Tampermonkey script!
-+ Auto-updates!
++ Violetmonkey script!
 - Minimal features
+- No menu as of now
 ```
 
 ### KrunkerPlus Menu Features
@@ -15,16 +14,16 @@ This repository follows and edits [THEGUY3ds' krunkerplus hack.](https://github.
 - Chams
 - ESP
 
-### Tampermonkey install
+### Violetmonkey install
 
-To install, copy [this script](https://raw.githubusercontent.com/Katistic/WheelChairGUI/master/krunkerplus.tampermonkey.loader.js) into tampermonkey
+To install, copy [this script](https://raw.githubusercontent.com/Katistic/WheelChairGUI/master/hack.tampermonkey.js) into violetmonkey
 
 ### Known bugs
 
 - Name ESP doesn't work 100%
 - Hack sometimes doesn't work
 
-### Example pictures
+### Example pictures (Outdated)
 
 ![Loading.png](https://raw.githubusercontent.com/katistic/wheelchairgui/master/pics/KrunkerPlus.Loading.png)
 
